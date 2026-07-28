@@ -1,0 +1,878 @@
+openapi: 3.0.0
+info:
+  title: property resources
+  description: |-
+    Property Resources API: enabling property-based pricing.
+  version: 1.0.0
+  contact:
+    email: apiteam@nearmap.com
+  license:
+    name: internal
+    url: https://nearmap.com
+
+servers:
+  - description: Production
+    url: https://api.nearmap.com/property/resources/v1
+
+  - description: QA
+    url: https://api-qa.nearmapdev.com/property/resources/v1
+
+security:
+  - APIKeyQuery: []
+
+paths:
+  /properties/address:
+    post:
+      summary: Search for a property resources by address
+      operationId: findByAddress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AddressRequest'
+                - $ref: '#/components/schemas/RequestMeta'
+      responses:
+        200:
+          $ref: '#/components/responses/PropertyResourcesResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          description: The caller has not provided valid authentication credentials
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/SystemError'
+      tags: []
+  /properties/parcels:
+    post:
+      summary: Search for a property resources given a point
+      operationId: findByParcels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ParcelsRequest'
+                - $ref: '#/components/schemas/RequestMeta'
+      responses:
+        200:
+          $ref: '#/components/responses/PropertyResourcesResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          description: The caller has not provided valid authentication credentials
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/SystemError'
+      tags: []
+  /properties/aoi:
+    post:
+      summary: Search for a property resources in a given region
+      operationId: findByGeometry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PolygonRequest'
+                - $ref: '#/components/schemas/RequestMeta'
+      responses:
+        200:
+          $ref: '#/components/responses/PropertyResourcesResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          description: The caller has not provided valid authentication credentials
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/SystemError'
+      tags: []
+  /properties/point:
+    post:
+      summary: Search for an AOI property resources in a given point and radius
+      operationId: findByPoint
+      description: |
+        The endpoint will return an AOI property for a bounding box around the provided point.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PointRequest'
+                - $ref: '#/components/schemas/RequestMeta'
+                - type: object
+                  properties:
+                    radius:
+                      $ref: "#/components/schemas/radius"
+                  required:
+                   - radius
+      responses:
+        200:
+          $ref: '#/components/responses/AOIPropertyResourcesResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          description: The caller has not provided valid authentication credentials
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/SystemError'
+      tags: [ ]
+components:
+  securitySchemes:
+    APIKeyQuery:
+      name: apikey
+      type: apiKey
+      in: query
+  schemas:
+    radius:
+      type: integer
+      description: |
+        Distance from the point in metres. Required in conjunction with point to define the token's bounding box (not a circle).
+      example: 100
+      minimum: 0
+      exclusiveMinimum: true
+      maximum: 100
+    AddressRequest:
+      type: object
+      title: AddressRequest
+      required: [address]
+      properties:
+        address:
+          required:
+            - address
+            - country
+          type: object
+          properties: 
+            address:
+              type: string
+              example: "67 Old Chestnut Rd. Rainbow Forrest, NSW, 2121"
+            country:
+              type: string
+              enum: 
+                - AU
+                - US
+              example: AU
+    ParcelsRequest:
+      type: object
+      title: ParcelsRequest
+      required: [aoi]
+      properties:
+        aoi:
+          $ref: "#/components/schemas/Point"
+    PolygonRequest:
+      type: object
+      title: ParcelsRequest
+      required: [aoi]
+      properties:
+        aoi:
+          oneOf:
+          - $ref: "#/components/schemas/Polygon"
+          - $ref: "#/components/schemas/MultiPolygon"
+    PointRequest:
+      type: object
+      title: ParcelsRequest
+      required: [ aoi ]
+      properties:
+        aoi:
+          oneOf:
+            - $ref: "#/components/schemas/Point"
+    RequestMeta:
+      type: object
+      title: RequestMeta
+      description: |
+        RequestMeta is information about how the request is processed including 
+        limits, cursors, an filters.
+      required:
+        - resources
+      properties:
+        resources:
+          type: array
+          items: 
+            $ref: "#/components/schemas/RequestResource"
+
+          description: |
+            Resources determine which types of coverage are returned.
+
+            See also: https://github.com/nearmap/api-team/blob/master/technical/design/highlander_api_design.md#supported-resources
+        since: 
+          type: string
+          description: | 
+            First day from which to retrieve the surveys (inclusive). Must be of the form "YYYY-MM-DD" or as a relative date relative date "xxY", "xxM", "xxD" where 5M represents since 5 months ago.
+          example: "10D"
+        until:
+          type: string
+          description: |
+            Last day from which to retrieve the surveys (inclusive). Must be of the form "YYYY-MM-DD" or as a relative date relative date "xxY", "xxM", "xxD" where 5M represents until 5 months ago.
+          example: "5D"
+        overlap:
+          type: string
+          description: |
+            * `partial` allows returning metadata for imagery that partially intersects the requested area (or fully contains it). 
+            * `full` will only returns resources fully containing the requested area.
+          enum: 
+            - partial
+            - full
+          default: partial
+        limit:
+          type: integer
+          description: | 
+            Max number of resources in the result. Maximum is 300
+          default: 20
+        nextCursor:
+          type: string
+          description: | 
+            Cursor value for next page is provided in the search result.
+          example: "706C6561736520646F6E2774207061727365207468697320796F757273656C6621"
+    GeoJSONBase:
+      description: >
+        Base(abstract) type for all GeoJSon 'Geometry' objects
+      type: object
+      properties:
+        'type':
+          type: string
+          enum:
+            - Point
+            - Polygon
+            - MultiPolygon
+      required:
+        - type
+      discriminator:
+        propertyName: type
+    Point:
+      description: GeoJSon point object
+      allOf:
+        - $ref: '#/components/schemas/GeoJSONBase'
+        - type: object
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: 'string'
+              enum: [Point]
+            coordinates:
+              $ref: "#/components/schemas/Coordinate2D"
+    Coordinate2D:
+      description: >
+        A 2D coordinate is an array of numbers. There MUST be two elements in the array.
+        The two elements are longitude and latitude using decimal numbers.
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        type: number
+    LinearRing:
+      type: array
+      description: A collection of coordinate pairs that define the Polygon ring.
+      minItems: 4
+      items:
+        $ref: "#/components/schemas/Coordinate2D"
+      example:
+        [
+          [ -97.72889712645727, 30.30097004106024 ],
+          [ -97.72891413685106, 30.30094441770939 ],
+          [ -97.7286977067365, 30.300846611442992 ],
+          [ -97.7286821440362, 30.300871609858902 ],
+          [ -97.72889712645727, 30.30097004106024 ],
+        ]
+    Polygon:
+      description: GeoJSon Polygon object
+      allOf:
+        - $ref: '#/components/schemas/GeoJSONBase'
+        - type: object
+          required:
+            - coordinates
+          properties:
+            'coordinates':
+              type: array
+              items:
+                $ref: '#/components/schemas/LinearRing'
+    MultiPolygon:
+      description: GeoJSon MultiPolygon object
+      allOf:
+        - $ref: '#/components/schemas/GeoJSONBase'
+        - type: object
+          required:
+            - coordinates
+          properties:
+            'coordinates':
+              type: array
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LinearRing'
+    ResourceNamespace: 
+      description: Namespace of resource
+      type: string
+      enum:
+        - raster
+        - ai
+    ResourceType:
+      description: Type of resource  
+      type: string
+      enum:
+        - vert
+        - detaildsm
+        - detaildtm
+        - panorama
+        - trueortho
+        - vector_prediction
+        - raster_prediction
+        - dtm
+        - dsm
+    ResourceAttributes:
+      description: Attributes of resource
+      properties:
+        firstObservationTime:
+          type: string
+          example: "2010-05-01T18:21:13Z"
+        lastObservationTime:
+          type: string
+          example: "2010-05-03T16:55:21Z"
+        surveyId:
+          type: string
+          example: "4914035c-facc-11e8-b66d-ab1c55ceea7d"
+        scale:
+          $ref: "#/components/schemas/ResourceScale"
+    Selector:
+      description: |
+        Retrieves resources that meet the specified criteria. All selectors are optional; multiple selectors can be provided in which case any of the specified values may match the corresponding property of a resource
+      type: object
+      properties:
+        generation:
+          description: AI content generation.
+          type: integer
+        generations:
+          description: Plural form of generation.
+          type: array
+          items:
+            type: integer
+        systemVersion:
+          description: External system version in the format of `gen#-config_name`. For example, `gen6-glowing_grove`.
+          type: string
+        systemVersions:
+          description: Plural form of `systemVersion`.
+          type: array
+          items:
+            type: string
+        internalSystemVersion:
+          description: Internal system version.
+          type: string
+        internalSystemVersions:
+          description: Plural form of `internalSystemVersion`.
+          type: array
+          items:
+            type: string
+        releaseStatus:
+          description: Release status.
+          type: string
+          enum:
+            - ga
+            - preview
+        releaseStatuses:
+          description: Plural form of `releaseStatus`.
+          type: array
+          items:
+            type: string
+        surveyId:
+          description: Survey ID of the survey associated with the resource.
+          type: string
+          format: uuid
+        surveyIds:
+          description: Plural form of `surveyId`.
+          type: array
+          items:
+            type: string
+        sdSurveyId:
+          description: SD survey ID of the survey associated with the resource.
+          type: integer
+        sdSurveyIds:
+          description: Plural form of `sdSurveyId`.
+          type: array
+          items:
+            type: integer
+        taskId:
+          description: Task ID of the resource.
+          type: string
+          format: uuid
+        taskIds:
+          description: Plural form of `taskId`.
+          type: array
+          items:
+            type: string
+        resourceId:
+          description: Resource ID.
+          type: string
+          format: uuid
+        resourceIds:
+          description: Plural form of `resourceIds`.
+          type: array
+          items:
+            type: string
+        captureDate:
+          description: Capture date of the survey associated with the resource.
+          type: string
+          format: date
+          example: "2024-10-23"
+        captureDates:
+          description: Plural form of `captureDate`.
+          type: array
+          items:
+            type: string
+        since:
+          description: |
+            Date (`YYYY-MM-DD`) specifying that the capture must be on or after the given date.
+          type: string
+          format: date
+        until:
+          description: |
+            Date (`YYYY-MM-DD`) specifying that the capture date must be on or before the given date.
+          type: string
+          format: date
+        pipeline:
+          description: AI pipeline the resource is generated from.
+          type: string
+          enum:
+            - led_zeppelin
+            - foo_fighters
+        pipelines:
+          description: Plural form of `pipeline`.
+          type: array
+          items:
+            type: string
+        predictedOn:
+          description: Imagery type the resource was predicted on.
+          type: string
+          enum:
+            - Vert
+            - TrueOrtho
+        predictedOns:
+          description: Plural form of `predictedOn`.
+          type: array
+          items:
+            type: string
+        postcat:
+          description: Resource is from a postcat capture.
+          type: boolean
+        surveyCoverageStatus:
+          description: Resource coverage status with respect to it's source survey.
+          type: string
+          enum:
+            - partial
+            - full
+        surveyCoverageStatuses:
+          description: Plural form of `surveyCoverageStatus`.
+          type: array
+          items:
+            type: string
+        resourceCoverageStatusInAoi:
+          description: |
+            Resource coverage status with respect to the provided AOI.
+            Should only be used in conjunction with an AOI.
+          type: string
+          enum:
+            - partial
+            - full
+        resourceCoverageStatusesInAoi:
+          description: Plural form of `resourceCoverageStatusInAoi`.
+          type: array
+          items:
+            type: string
+        indicative3dCoverageStatusInAoi:
+          description: |
+            Indicates the coverage status of the resource's 3D attribute boundary relative to the AOI. When specified, the coverage check is performed against the resource's 3D boundary and should only be used together with an AOI.
+          type: string
+          enum:
+            - partial
+            - full
+        indicative3dCoverageStatusesInAoi:
+          description: Plural form of `indicative3dCoverageStatusInAoi`.
+          type: array
+          items:
+            type: string
+        excludeTilesWithOcclusion:
+          description: |
+            When this selector is enabled, tiles from resources with `Atmospheric Occlusion - Opaque` features are excluded during AOI coverage checks.
+            This works only in conjunction with an AOI input and only works for `vector_prediction` resource type.
+          type: boolean
+        eventId:
+          description: |
+            Event ID of the event associated with the resource. Applicable
+            only to the `conflation_damage_detection` resource type.
+          type: string
+          format: uuid
+        eventIds:
+          description: Plural form of `eventId`.
+          type: array
+          items:
+            type: string
+            format: uuid
+        eventJiraKey:
+          description: |
+            Jira key of the event associated with the resource. Applicable
+            only to the `conflation_damage_detection` resource type.
+          type: string
+        eventJiraKeys:
+          description: Plural form of `eventJiraKey`.
+          type: array
+          items:
+            type: string
+        eventName:
+          description: |
+            Human friendly name of the event associated with the resource.
+            Applicable only to the `conflation_damage_detection` resource
+            type. Event names are not unique between distinct events.
+          type: string
+        eventNames:
+          description: Plural form of `eventName`.
+          type: array
+          items:
+            type: string
+
+
+    ResourceScale:
+      description: Scale of resource
+      properties:
+        pixelSize:
+          type: number
+          example: 0.03732276771737122
+        widthInTiles:
+          type: integer
+          example: 1
+        heightInTiles:
+          type: integer
+          example: 1
+
+    ResourceLinks:
+      description: Links of resource
+      type: object
+      properties:
+        staticmap:
+          type: string
+        tiles:
+          type: string
+        aifeatures:
+          type: string
+      example:
+        staticmap: "https://api.nearmap.com/staticmap/v3/surveys/4914035c-facc-11e8-b66d-ab1c55ceea7d/Vert.{format}?x={x}&y={y}&tileSize=4096x4096"
+        tiles: "https://api.nearmap.com/tiles/v3/surveys/4914035c-facc-11e8-b66d-ab1c55ceea7d/Vert/{z}/{x}/{y}.{format}"
+
+          
+    RequestResource:
+      description: Requested resource
+      type: object
+      properties:
+        namespace:
+          $ref: "#/components/schemas/ResourceNamespace"
+        type:
+          $ref: "#/components/schemas/ResourceType"
+        selectors:
+          $ref: "#/components/schemas/Selector"
+
+    ResponseResource:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "100-4917c780-facc-11e8-b671-33ff07a8dfbe"
+        type:
+          $ref: "#/components/schemas/ResourceType"
+        namespace:
+          $ref: "#/components/schemas/ResourceNamespace"
+        attributes:
+          $ref: "#/components/schemas/ResourceAttributes"
+        links:
+          $ref: "#/components/schemas/ResourceLinks"
+
+  responses:
+    PropertyResourcesResponse: 
+      description: A list of property resources.
+      content: 
+        application/json:
+          schema:
+            properties:
+              properties:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    property:
+                      type: object 
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                          enum:
+                            - aoi
+                            - parcel
+                        address:
+                          type: string
+                        geocodedPoint:
+                          $ref: '#/components/schemas/Point'
+                        transactionToken:
+                          type: string
+                      example: 
+                        id: "4799a1dd-463a-4c22-9942-9a2553611b5c"
+                        type: "parcel"
+                        address: "15 Milky Way Pde. Sydney, NSW 2222 AU"
+                        geocodedPoint: 
+                          type: "point"
+                          coordinates: 
+                            - 151.243
+                            - -33.897 
+                        transactionToken: "eyJhbGciOiJkaXIiLCJjdHkiOiJKV1..."
+              resources:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResponseResource"
+                example:
+                  - id: "100-4917c780-facc-11e8-b671-33ff07a8dfbe"
+                    type: "vert"
+                    namespace: "raster"
+                    attributes:
+                      firstObservationTime: "2023-05-01T10:30:00Z"
+                      lastObservationTime: "2023-05-01T11:45:00Z"
+                      surveyId: "4917c780-facc-11e8-b671-33ff07a8dfbe"
+                      scale:
+                        pixelSize: 0.075
+                        widthInTiles: 4
+                        heightInTiles: 4
+                    links:
+                      staticmap: "https://api.nearmap.com/staticmap/v3/surveys/4917c780-facc-11e8-b671-33ff07a8dfbe/Vert.{format}?x={x}&y={y}&tileSize=4096x4096"
+                      tiles: "https://api.nearmap.com/tiles/v3/surveys/4917c780-facc-11e8-b671-33ff07a8dfbe/Vert/{z}/{x}/{y}.{format}"
+                  - id: "101-5028d891-fbdd-22f9-c782-44gg08b9egcf"
+                    type: "trueortho"
+                    namespace: "raster"
+                    attributes:
+                      firstObservationTime: "2023-04-15T09:20:00Z"
+                      lastObservationTime: "2023-04-15T10:35:00Z"
+                      surveyId: "5028d891-fbdd-22f9-c782-44gg08b9egcf"
+                      scale:
+                        pixelSize: 0.05
+                        widthInTiles: 6
+                        heightInTiles: 6
+                    links:
+                      staticmap: "https://api.nearmap.com/staticmap/v3/surveys/5028d891-fbdd-22f9-c782-44gg08b9egcf/TrueOrtho.{format}?x={x}&y={y}&tileSize=4096x4096"
+                      tiles: "https://api.nearmap.com/tiles/v3/surveys/5028d891-fbdd-22f9-c782-44gg08b9egcf/TrueOrtho/{z}/{x}/{y}.{format}"
+                  - id: "200-6139ea02-gcee-33ga-d893-55hh19c0fhdf"
+                    type: "vector_prediction"
+                    namespace: "ai"
+                    attributes:
+                      firstObservationTime: "2023-06-10T14:15:00Z"
+                      lastObservationTime: "2023-06-10T15:30:00Z"
+                      surveyId: "6139ea02-gcee-33ga-d893-55hh19c0fhdf"
+                      scale:
+                        pixelSize: 0.1
+                        widthInTiles: 2
+                        heightInTiles: 2
+                    links:
+                      aifeatures: "https://api.nearmap.com/ai/features/v4/surveys/6139ea02-gcee-33ga-d893-55hh19c0fhdf/VectorPrediction/{z}/{x}/{y}.{format}"
+                  - id: "201-724afb13-hdff-44hb-e904-66ii20d1gieg"
+                    type: "raster_prediction"
+                    namespace: "ai"
+                    attributes:
+                      firstObservationTime: "2023-07-22T11:00:00Z"
+                      lastObservationTime: "2023-07-22T12:15:00Z"
+                      surveyId: "724afb13-hdff-44hb-e904-66ii20d1gieg"
+                      scale:
+                        pixelSize: 0.15
+                        widthInTiles: 3
+                        heightInTiles: 3
+                    links:
+                      tiles: "https://api.nearmap.com/tiles/v3/surveys/724afb13-hdff-44hb-e904-66ii20d1gieg/RasterPrediction/{z}/{x}/{y}.{format}"
+
+              cursor:
+                type: string
+                example: "74686973206973206D65616E7420746F206265206F7061717565"
+    AOIPropertyResourcesResponse:
+      description: A list of AOI property resources.
+      content:
+        application/json:
+          schema:
+            properties:
+              properties:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    property:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                          enum:
+                            - aoi
+                        address:
+                          type: string
+                        geocodedPoint:
+                          $ref: '#/components/schemas/Point'
+                        transactionToken:
+                          type: string
+                      example:
+                        id: "4799a1dd-463a-4c22-9942-9a2553611b5c"
+                        type: "aoi"
+                        address: "15 Milky Way Pde. Sydney, NSW 2222 AU"
+                        geocodedPoint:
+                          type: "point"
+                          coordinates:
+                            - 151.243
+                            - -33.897
+                        transactionToken: "eyJhbGciOiJkaXIiLCJjdHkiOiJKV1..."
+              resources:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResponseResource"
+                example:
+                  - id: "300-8350fc14-heff-55ic-f015-77jj31e2hieh"
+                    type: "vert"
+                    namespace: "raster"
+                    attributes:
+                      firstObservationTime: "2023-08-12T08:45:00Z"
+                      lastObservationTime: "2023-08-12T10:00:00Z"
+                      surveyId: "8350fc14-heff-55ic-f015-77jj31e2hieh"
+                      scale:
+                        pixelSize: 0.08
+                        widthInTiles: 5
+                        heightInTiles: 5
+                    links:
+                      staticmap: "https://api.nearmap.com/staticmap/v3/surveys/8350fc14-heff-55ic-f015-77jj31e2hieh/Vert.{format}?x={x}&y={y}&tileSize=4096x4096"
+                      tiles: "https://api.nearmap.com/tiles/v3/surveys/8350fc14-heff-55ic-f015-77jj31e2hieh/Vert/{z}/{x}/{y}.{format}"
+                  - id: "301-9461gd25-ifgg-66jd-g126-88kk42f3jifj"
+                    type: "dsm"
+                    namespace: "raster"
+                    attributes:
+                      firstObservationTime: "2023-09-03T13:20:00Z"
+                      lastObservationTime: "2023-09-03T14:35:00Z"
+                      surveyId: "9461gd25-ifgg-66jd-g126-88kk42f3jifj"
+                      scale:
+                        pixelSize: 0.12
+                        widthInTiles: 3
+                        heightInTiles: 3
+                    links:
+                      staticmap: "https://api.nearmap.com/staticmap/v3/surveys/9461gd25-ifgg-66jd-g126-88kk42f3jifj/DSM.{format}?x={x}&y={y}&tileSize=4096x4096"
+                      tiles: "https://api.nearmap.com/tiles/v3/surveys/9461gd25-ifgg-66jd-g126-88kk42f3jifj/DSM/{z}/{x}/{y}.{format}"
+                  - id: "400-a572he36-jghh-77ke-h237-99ll53g4kjgk"
+                    type: "vector_prediction"
+                    namespace: "ai"
+                    attributes:
+                      firstObservationTime: "2023-07-28T16:10:00Z"
+                      lastObservationTime: "2023-07-28T17:25:00Z"
+                      surveyId: "a572he36-jghh-77ke-h237-99ll53g4kjgk"
+                      scale:
+                        pixelSize: 0.09
+                        widthInTiles: 4
+                        heightInTiles: 4
+                    links:
+                      aifeatures: "https://api.nearmap.com/ai/features/v4/surveys/a572he36-jghh-77ke-h237-99ll53g4kjgk/VectorPrediction/{z}/{x}/{y}.{format}"
+                  - id: "401-b683if47-kihh-88lf-i348-00mm64h5lkhl"
+                    type: "raster_prediction"
+                    namespace: "ai"
+                    attributes:
+                      firstObservationTime: "2023-06-05T12:30:00Z"
+                      lastObservationTime: "2023-06-05T13:45:00Z"
+                      surveyId: "b683if47-kihh-88lf-i348-00mm64h5lkhl"
+                      scale:
+                        pixelSize: 0.11
+                        widthInTiles: 6
+                        heightInTiles: 6
+                    links:
+                      tiles: "https://api.nearmap.com/tiles/v3/surveys/b683if47-kihh-88lf-i348-00mm64h5lkhl/RasterPrediction/{z}/{x}/{y}.{format}"
+
+              total:
+                type: integer
+                example: 42
+              cursor:
+                type: string
+                example: "74686973206973206D65616E7420746F206265206F7061717565"
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            properties:
+              code:
+                type: string
+                description: An error code describing the problem with the supplied input
+                               * MULTIPLE_PARCELS_FOUND will indicate that multiple parcels were found for the supplied address or AOI
+                enum:
+                  - INVALID_BODY
+                  - INVALID_ADDRESS
+                  - VALIDATION
+                  - INVALID_CURSOR_PARAMETER
+                  - INVALID_LIMIT
+                  - INVALID_GEOMETRY
+                  - INVALID_RADIUS
+                  - INVALID_POINT
+                  - INVALID_RESOURCES
+                  - INVALID_CURSOR
+                  - MULTIPLE_PARCELS_FOUND
+                  - INVALID_OVERLAP
+                  - INVALID_FILTER_TYPE
+                example: INVALID_ADDRESS
+              error:
+                description: A human readable message describing the problem
+                type: string
+                example: An invalid address was supplied
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            properties:
+              code:
+                type: string
+                description: The caller does not have permission to perform the requested action
+                enum:
+                  - ALLOWANCE_EXCEEDED
+                example: ALLOWANCE_EXCEEDED
+              error:
+                description: A human readable message describing the problem
+                type: string
+                example: Subscription allowance exceeded
+    NotFoundError:
+      description: No property could be found
+      content:
+        application/json:
+          schema:
+            properties:
+              error:
+                description: An error message describing the problem
+                type: string
+                example: not found
+    SystemError:
+      description: A system problem has occurred
+      content:
+        application/json:
+          schema:
+            properties:
+              code:
+                type: string
+                description: An error code describing the problem
+                enum:
+                  - SYSTEM_ERROR
+                  - SYSTEM_ERROR_NOT_RETRYABLE
+                example: SYSTEM_ERROR
+              error:
+                description: A human readable message describing the problem
+                type: string
+                example: Internal Server Error
+
