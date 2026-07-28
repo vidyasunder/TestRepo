@@ -1,0 +1,3158 @@
+openapi: 3.0.0
+info:
+  title: AI Feature API.
+  description: |
+    Serves Nearmap AI Features.
+  version: "4.0.0"
+  contact:
+    email: apiteam@nearmap.com
+
+servers:
+  - description: Production
+    url: https://api.nearmap.com/ai/features/v4
+
+security:
+  - APIKeyQuery: []
+  - APIKeyHeader: []
+  - TXV3TokenHeader: []
+
+tags:
+  - name: features
+  - name: rollups
+
+paths:
+  /features.json:
+    get:
+      tags:
+        - features
+      summary: Returns AI features with their attributes.
+      description: |
+        Returns features, their attributes and optional supplementary data
+        within the given polygon or address, and date range.
+      operationId: getFeaturesByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+        - $ref: "#/components/parameters/parcelMode"
+        - $ref: "#/components/parameters/rapid"
+        - $ref: "#/components/parameters/includeSuppData"
+        - $ref: "#/components/parameters/excludePartialResources"
+        - $ref: "#/components/parameters/postcat"
+        - $ref: "#/components/parameters/damageModelVersion"
+      responses:
+        "200":
+          $ref: "#/components/responses/features_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - features
+      summary: Returns AI features with their attributes.
+      description: |
+        Returns features, their attributes and optional supplementary data
+        within the given AOI or address, and date range.
+
+        Operates semantically the same way as the GET variant but allows the AOI and classes
+        to be passed inside the request body rather than as a polygon query
+        parameter. This may be required for AOIs and classes whose representations are
+        large, in order to avoid URL length limitations.
+      operationId: postFeaturesByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+        - $ref: "#/components/parameters/parcelMode"
+        - $ref: "#/components/parameters/rapid"
+        - $ref: "#/components/parameters/includeSuppData"
+        - $ref: "#/components/parameters/excludePartialResources"
+        - $ref: "#/components/parameters/postcat"
+        - $ref: "#/components/parameters/damageModelVersion"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/features_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /surveyresources/{surveyResourceId}/features.json:
+    get:
+      tags:
+        - features
+      summary: Returns AI features with their attributes.
+      description: |
+        Returns features, their attributes and optional supplementary data
+        within the given polygon or address, for the given survey resource.
+      operationId: getFeaturesBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/parcelMode"
+        - $ref: "#/components/parameters/includeSuppData"
+        - $ref: "#/components/parameters/damageModelVersion"
+      responses:
+        "200":
+          $ref: "#/components/responses/features_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - features
+      summary: Returns AI features with their attributes.
+      description: |
+        Returns features, their attributes and optional supplementary data
+        within the given AOI or address, for the given survey resource.
+
+        Operates semantically the same way as the GET variant but allows the AOI and classes
+        to be passed inside the request body rather than as a polygon query
+        parameter. This may be required for polygons and classes whose representations are
+        large, in order to avoid URL length limitations.
+      operationId: postFeaturesBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/parcelMode"
+        - $ref: "#/components/parameters/includeSuppData"
+        - $ref: "#/components/parameters/damageModelVersion"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/features_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /rollups.csv:
+    get:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given polygon/address and date range.
+      operationId: getRollupsCSVByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_csv_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given polygon/address and date range.
+
+        Operates semantically the same way as the GET variant but allows
+        the polygon parameter and classes to be passed inside the request body rather than
+        as a query parameter. This may be required for polygons and classes whose
+        representations are large, in order to avoid URL length limitations.
+      operationId: postRollupsCSVByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_csv_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /rollups.json:
+    get:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given polygon/address and date range.
+      operationId: getRollupsJSONByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_json_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given polygon/address and date range.
+
+        Operates semantically the same way as the GET variant but allows
+        the polygon parameter and classes to be passed inside the request body rather than
+        as a query parameter. This may be required for polygons and classes whose
+        representations are large, in order to avoid URL length limitations.
+      operationId: postRollupsJSONByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_json_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /rollups.geojson:
+    get:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given polygon/address and date range.
+      operationId: getRollupsGeoJSONByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_geojson_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given polygon/address and date range.
+
+        Operates semantically the same way as the GET variant but allows
+        the polygon parameter and classes to be passed inside the request body rather than
+        as a query parameter. This may be required for polygons and classes whose
+        representations are large, in order to avoid URL length limitations.
+      operationId: postRollupsGeoJSONByDate
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+        - $ref: "#/components/parameters/3dCoverageFeature"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_geojson_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /surveyresources/{surveyResourceId}/rollups.csv:
+    get:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given survey resource and polygon.
+
+        Either the polygon or all geocoding address related query parameters (but not both) must be provided.
+      operationId: getRollupsCSVBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_csv_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given survey resource and polygon.
+
+        Either the polygon or all geocoding address related query
+        parameters (but not both) must be provided.
+
+        Operates semantically the same way as the GET variant
+        but allows the polygon parameter and classes to be passed inside the request body
+        rather than as a query parameter. This may be required for polygons and classes
+        whose representations are large, in order to avoid URL length
+        limitations.
+      operationId: postRollupsCSVBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_csv_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /surveyresources/{surveyResourceId}/rollups.json:
+    get:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given survey resource and polygon.
+
+        Either the polygon or all geocoding address related query parameters
+        (but not both) must be provided.
+      operationId: getRollupsJSONBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_json_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given survey resource and polygon.
+
+        Either the polygon or all geocoding address related query
+        parameters (but not both) must be provided.
+
+        Operates semantically the same way as the GET variant
+        but allows the polygon parameter and classes to be passed inside the request body
+        rather than as a query parameter. This may be required for polygons and classes
+        whose representations are large, in order to avoid URL length
+        limitations.
+      operationId: postRollupsJSONBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_json_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /surveyresources/{surveyResourceId}/rollups.geojson:
+    get:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given survey resource and polygon.
+
+        Either the polygon or all geocoding address related query parameters
+        (but not both) must be provided.
+      operationId: getRollupsGeoJSONBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_geojson_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+    post:
+      tags:
+        - rollups
+      summary: Returns aggregated (rolled up) values computed from AI features.
+      description: |
+        Returns aggregated (rolled up) values computed from all AI features
+        within the given survey resource and polygon.
+
+        Either the polygon or all geocoding address related query
+        parameters (but not both) must be provided.
+
+        Operates semantically the same way as the GET variant
+        but allows the polygon parameter and classes to be passed inside the request body
+        rather than as a query parameter. This may be required for polygons and classes
+        whose representations are large, in order to avoid URL length
+        limitations.
+      operationId: postRollupsGeoJSONBySurveyResourceId
+      parameters:
+        - $ref: "#/components/parameters/optionalPolygon"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/packs"
+        - $ref: "#/components/parameters/surveyResourceId"
+        - $ref: "#/components/parameters/classes"
+        - $ref: "#/components/parameters/streetAddress"
+        - $ref: "#/components/parameters/city"
+        - $ref: "#/components/parameters/state"
+        - $ref: "#/components/parameters/zip"
+        - $ref: "#/components/parameters/country"
+        - $ref: "#/components/parameters/reference"
+        - $ref: "#/components/parameters/alpha"
+        - $ref: "#/components/parameters/beta"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/rollups_geojson_ok"
+        "400":
+          $ref: "#/components/responses/features_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+        "404":
+          $ref: "#/components/responses/features_not_found"
+
+  /coverage.json:
+    get:
+      tags:
+        - coverage
+      summary: Searches for the survey resources available in a particular area.
+      description: Returns survey resources at a particular location, filtered by date.
+      operationId: getCoverage
+      parameters:
+        - $ref: "#/components/parameters/coveragePolygon"
+        - $ref: "#/components/parameters/coveragePoint"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/prerelease"
+        - $ref: "#/components/parameters/perspective"
+        - $ref: "#/components/parameters/3dCoverage"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/excludePartialResources"
+        - $ref: "#/components/parameters/postcat"
+      responses:
+        "200":
+          $ref: "#/components/responses/coverage_ok"
+        "400":
+          $ref: "#/components/responses/coverage_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+    post:
+      tags:
+        - coverage
+      summary: |
+        Searches for the survey resources available in a particular area.
+        Operates semantically the same way as the GET variant but allows the
+        polygon parameter and classes to be passed inside the request body rather than as a
+        query parameter. This may be required for polygons and classes whose representations
+        are large, in order to avoid URL length limitations.
+      description: Returns survey resources at a particular location, filtered by date.
+      operationId: postCoverage
+      parameters:
+        - $ref: "#/components/parameters/coveragePolygon"
+        - $ref: "#/components/parameters/coveragePoint"
+        - $ref: "#/components/parameters/since"
+        - $ref: "#/components/parameters/until"
+        - $ref: "#/components/parameters/bulk"
+        - $ref: "#/components/parameters/prerelease"
+        - $ref: "#/components/parameters/perspective"
+        - $ref: "#/components/parameters/3dCoverage"
+        - $ref: "#/components/parameters/systemVersion"
+        - $ref: "#/components/parameters/systemVersionPrefix"
+        - $ref: "#/components/parameters/excludePartialResources"
+        - $ref: "#/components/parameters/postcat"
+      requestBody:
+        $ref: "#/components/requestBodies/aoi_and_classes"
+      responses:
+        "200":
+          $ref: "#/components/responses/coverage_ok"
+        "400":
+          $ref: "#/components/responses/coverage_bad_request"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+
+  /packs.json:
+    get:
+      tags:
+        - features
+      summary: Returns packs available to the user.
+      description: |
+        Returns detailed information about the packs available to the user
+        calling the API. Details include which feature and attribute classes are
+        available as part of each pack.
+      parameters:
+        - $ref: "#/components/parameters/bulk"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PacksReport"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+
+  /classes.json:
+    get:
+      tags:
+        - features
+      summary: Returns all the feature and attribute classes available to the user.
+      description: |
+        Returns detailed information about the feature and attribute classes
+        available to the user calling the API.
+      parameters:
+        - $ref: "#/components/parameters/bulk"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassesReport"
+        "401":
+          $ref: "#/components/responses/generic_unauthorized"
+        "403":
+          $ref: "#/components/responses/generic_forbidden"
+
+components:
+  securitySchemes:
+    APIKeyQuery:
+      name: apikey
+      type: apiKey
+      in: query
+    APIKeyHeader:
+      name: Authorization
+      type: apiKey
+      in: header
+      description: Header value in the format 'Apikey <api_key>'
+    TXV3TokenHeader:
+      name: Authorization
+      type: apiKey
+      in: header
+      description: |
+        Header value in the format 'Transaction {transactionToken}'.
+        transactionToken is tx v3 token from the response to a previous call to the property resources service.
+
+  schemas:
+    FeatureResult:
+      type: object
+      properties:
+        systemVersion:
+          type: string
+          description: The version of the system used to generate the AI data.
+        resourceId:
+          type: string
+          description: The ID of the survey resource.
+        surveyId:
+          type: string
+          description: The survey ID of the survey associated with the survey resource.
+        surveyDate:
+          type: string
+          description: The date of the survey capture.
+          format: date
+          example: "2019-09-27"
+        credits:
+          type: integer
+          example: 1
+          description: The number of credits used for this request.
+        link:
+          type: string
+          example: https://apps.nearmap.com/maps/#/@-33.7251728,151.2955012,20.00z,0d/V/20190927
+          description: The MapBrowser link to the location that was requested.
+        features:
+          type: array
+          description: The AI features at the location requested.
+          items:
+            $ref: "#/components/schemas/Feature"
+        aggregate:
+          $ref: "#/components/schemas/Aggregate"
+        geomatchedAddress:
+          type: string
+          example: 10897 S River Front Pkwy Ste 150, South Jordan, UT 84095-5650, USA
+          description: Matched address used for geocoded requests.
+        perspective:
+          type: string
+          description: The perspective used to generate the AI data.
+          enum:
+            - Vert
+            - TrueOrtho
+        reference:
+          type: string
+          example: "123456"
+          description: |
+            The reference passed in via the X-Nearmap-Ext-Reference request
+            header value, if it is present. It is up to the user to track the
+            semantics of this field. E.g. they may wish to interpret it as an
+            insurance policy ID.
+        extentMinX:
+          type: number
+          description: Approximate minimum longitude of the AOI extent.
+        extentMinY:
+          type: number
+          description: Approximate minimum latitude of the AOI extent.
+        extentMaxX:
+          type: number
+          description: Approximate maximum longitude of the AOI extent.
+        extentMaxY:
+          type: number
+          description: Approximate maximum latitude of the AOI extent.
+        prerelease:
+          type: boolean
+          description: |
+            Indicates whether or not the system version used to serve the
+            request is a preview release. If it's not a preview release, then
+            it's a regular GA release. This field is only populated if the alpha
+            or beta request query parameters are set to true or a preview
+            release is explicitly requested.       
+        isRapidSurveyResource:
+          type: boolean
+          description: |
+            Indicates whether or not the survey resource is a rapid survey
+            resource. This field is only present if the `rapid`
+            query parameter is set to true. 
+        versions:
+          $ref: "#/components/schemas/Versions"
+        partialResource:
+          type: boolean
+          description: >
+            Indicates that the resource only has prediction generated in certain areas of the survey.
+            While it may have coverage in the AOI, it may not have coverage in other areas of the survey boundary.
+
+      required:
+        - systemVersion
+        - perspective
+        - resourceId
+        - surveyId
+        - surveyDate
+        - credits
+        - link
+        - features
+        - extentMinX
+        - extentMinY
+        - extentMaxX
+        - extentMaxY
+
+    Feature:
+      type: object
+      required:
+        - id
+        - classId
+        - description
+        - confidence
+        - parentId
+        - geometry
+        - areaSqm
+        - areaSqft
+        - clippedAreaSqm
+        - clippedAreaSqft
+        - unclippedAreaSqm
+        - unclippedAreaSqft
+        - surveyDate
+        - meshDate
+        - attributes
+      properties:
+        id:
+          type: string
+          description: The Unique ID of this feature.
+          example: 1e88ed3a-abc7-5c34-963e-06df354d39fb
+        classId:
+          type: string
+          description: The unique ID for the class of this feature.
+          example: 5a5cb214-eee3-4fdd-bfce-d21e9793cf6a
+        description:
+          type: string
+          description: A description of the class of this feature.
+          example: Roof
+        confidence:
+          type: number
+          description: The confidence level for this feature.
+          format: double
+          example: 0.94140625
+        parentId:
+          type: string
+          description: |
+            The feature ID of the immediate parent of this feature.
+
+            This field is always present. An empty string indicates that the
+            feature is a root-level feature with no parent.
+        geometry:
+          oneOf:
+            - $ref: "#/components/schemas/Point"
+            - $ref: "#/components/schemas/Polygon"
+            - $ref: "#/components/schemas/MultiPolygon"
+          discriminator:
+            propertyName: type
+          description: The geometry of the feature.
+        areaSqm:
+          type: number
+          description: |
+            The area of the feature geometry, in square meters, rounded to 1
+            decimal place.
+
+            Connected features (e.g. lawn grass, medium and high vegetation,
+            etc.) are clipped to the requested AOI and area computed off this
+            clipped geometry. For connected features, this area will always
+            equal clippedAreaSqm.
+
+            Discrete features (e.g. buildings, swimming pools, etc.) are not
+            clipped to the requested AOI, and the area is computed from the
+            entire feature geometry. For discrete features, this area will
+            always equal unclippedAreaSqm.
+          example: 12.8
+        areaSqft:
+          type: number
+          description: |
+            The area of the feature geometry, in square feet, rounded to the
+            nearest integer.
+
+            Connected features (e.g. lawn grass, medium and high vegetation,
+            etc.) are clipped to the requested AOI and area computed off this
+            clipped geometry. For connected features, this area will always
+            equal clippedAreaSqft.
+
+            Discrete features (e.g. buildings, swimming pools, etc.) are not
+            clipped to the requested AOI, and the area is computed from the
+            entire feature geometry. For discrete features, this area will
+            always equal unclippedAreaSqft.
+          example: 138.0
+        clippedAreaSqm:
+          type: number
+          description: |
+            The area of the feature geometry, clipped to the requested AOI, in
+            square meters, rounded to 1 decimal place.
+          example: 12.8
+        clippedAreaSqft:
+          type: number
+          description: |
+            The area of the feature geometry, clipped to the requested AOI, in
+            square feet, rounded to the nearest integer.
+          example: 138.0
+        unclippedAreaSqm:
+          type: number
+          description: |
+            The unclipped area of the feature geometry in square meters, rounded
+            to 1 decimal place.
+          example: 15.8
+        unclippedAreaSqft:
+          type: number
+          description: |
+            The unclipped area of the feature geometry in square feet, rounded
+            to the nearest integer.
+          example: 150.0
+        surveyDate:
+          type: string
+          description: The date of the survey capture.
+          format: date
+          example: "2019-09-27"
+        meshDate:
+          type: string
+          description: |
+            The date of the 3D mesh used to generate the resource (if applicable).
+
+            This field is always present. An empty string indicates that the
+            feature was not generated from a 3D mesh; a date string indicates
+            the capture date of the mesh.
+          example: "2019-09-27"
+        attributes:
+          type: array
+          description: The list of attributes related to this feature.
+          items:
+            $ref: "#/components/schemas/Attribute"
+        classStatus:
+          type: string
+          enum:
+            - prod
+            - alpha
+            - beta
+          description: |
+            Indicates if the class is a production, alpha, or beta class.
+
+            This field is only populated if the alpha or beta request query
+            parameters are set to true or a preview release is explicitly
+            requested.
+        belongsToParcel:
+          type: boolean
+          description: |
+            Indicates if the feature belongs to a parcel.
+
+            This field is only present if the `parcelMode` query parameter is
+            set to true.
+        clippedGeometry:
+          oneOf:
+            - $ref: "#/components/schemas/Polygon"
+            - $ref: "#/components/schemas/MultiPolygon"
+          discriminator:
+            propertyName: type
+          description: |
+            The clipped geometry of the feature. This field is only present if the
+            `parcelMode` query parameter is set to true and the clipped geometry
+            differs from the (unclipped) geometry.
+        roofSpotlightIndex:
+          $ref: "#/components/schemas/RSI"
+        damage:
+          $ref: "#/components/schemas/Damage"
+        defensibleSpace:
+          $ref: "#/components/schemas/DefensibleSpace"
+        hurricaneScore:
+          $ref: "#/components/schemas/HurricaneScore"
+        windScore:
+          $ref: "#/components/schemas/WindScore"
+        wildfireScore:
+          $ref: "#/components/schemas/WildfireScore"
+        hailScore:
+          $ref: "#/components/schemas/HailScore"
+        windHailRiskScore:
+          $ref: "#/components/schemas/WindHailRiskScore"
+    Aggregate:
+      type: object
+      description: |
+        Provides a summary of the AOI by aggregating or unioning relevant features 
+        into a single result. This field is used when the user's AOI spans multiple 
+        features and a single unified result is required.
+
+        `aggregate` field is currently only set when defensible space is requested by the user.   
+      properties:
+        defensibleSpace:
+          description: |
+            Provides information about defensible space coverage, area and risk object classes segmented by zones
+            for unioned building footprints on the provided AOI. 
+
+            Building footprints are features identified as a `footprint`, which can be either `Roof` (default), or
+            `Building Lifecycle` (fallback, used when Roof is significantly damaged or missing. 
+
+            To include this aggregate defensible space data in the response, set the `include` query parameter to `defensibleSpace`. 
+          type: object
+          properties:
+            skipped:
+              description: |
+                Indicates that the processing for defensible space have been skipped. When this happens, the zone buffers are omitted.
+                This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+                This field is omitted when processing was not skipped.
+              type: boolean
+            zones:
+              description: |
+                The defensible space zone buffers.
+              type: array
+              items:
+                $ref: "#/components/schemas/ZoneDefensibleSpace"
+
+    Attribute:
+      type: object
+      description: |
+        Attribute data for a feature. An attribute contains additional fields
+        that are specific to each attribute class.
+      required:
+        - classId
+        - description
+      properties:
+        classId:
+          type: string
+          description: The unique ID that identifies the class of this attribute.
+          example: 9357faf9-ea45-4787-8e9c-967b9819de9e
+        description:
+          type: string
+          description: A description of this class of this attribute.
+          example: Roof Material
+        classStatus:
+          type: string
+          enum:
+            - prod
+            - alpha
+            - beta
+          description: |
+            Indicates if the class is a production, alpha, or beta class.
+
+            This field is only populated if the alpha or beta request query
+            parameters are set to true or a preview release is explicitly
+            requested.
+        components:
+          type: array
+          description: The components of this attribute.
+          items:
+            $ref: "#/components/schemas/AttributeComponent"
+        has3dAttributes:
+          type: boolean
+          description: |
+            Indicates if the attribute has 3D attribute data, such as roof pitch
+            and building height.
+
+            Only available for `Building 3d attributes` and `Roof 3d attributes`
+            attribute classes, omitted if not available.
+        pitch:
+          type: number
+          description: |
+            The pitch of the roof in degrees.
+
+            Only available for `Roof 3d attributes` class, omitted if not
+            available.
+          format: double
+          example: 30.0
+        height:
+          type: number
+          description: |
+            The height of the building in meters.
+
+            Only available for `Building 3d attributes` class, omitted if not
+            available.
+          format: double
+          example: 5.0
+        heightM:
+          type: number
+          description: |
+            The height of the building in meters.
+
+            Only available for `Building 3d attributes` class, omitted if not
+            available.
+          format: double
+          example: 5.0
+        heightFt:
+          type: number
+          description: |
+            The height of the building in feet.
+
+            Only available for `Building 3d attributes` class, omitted if not
+            available.
+          format: double
+          example: 16.4
+        numStories:
+          type: object
+          description: |
+            Confidence levels for the number of stories.
+
+            Only available for `Building 3d attributes` class, omitted if not
+            available.
+          properties:
+            one:
+              type: number
+              description: The confidence level that the building has one story.
+              format: double
+              example: 0.78
+            two:
+              type: number
+              description: The confidence level that the building has two stories.
+              format: double
+              example: 0.22
+            threePlus:
+              type: number
+              description: The confidence level that the building has three or more stories.
+              format: double
+              example: 0.0
+        available:
+          type: boolean
+          description: |
+            Indicates availability of the value of this attribute.
+
+            Only available for `Ground height` and `Building pitch` attribute
+            classes, omitted if not available. 
+        value:
+          type: number
+          description: |
+            The value of the attribute.
+
+            Only available for `Ground height` and `Building pitch` attribute
+            classes, omitted if not available.
+          format: double
+          example: 5.0
+
+    AttributeComponent:
+      type: object
+      description: |
+        Component data for an attribute.
+
+        The components present for an attribute depend on its attribute class.
+      required:
+        - classId
+        - description
+        - areaSqm
+        - areaSqft
+        - ratio
+      properties:
+        classId:
+          type: string
+          description: The unique ID that identifies the class of this attribute component.
+          example: 9357faf9-ea45-4787-8e9c-967b9819de9e
+        description:
+          type: string
+          description: A description of this class of this attribute component.
+          example: Roof Rusting
+        classStatus:
+          type: string
+          enum:
+            - prod
+            - alpha
+            - beta
+          description: |
+            Indicates if the class is a production, alpha, or beta class.
+
+            This field is only present if the alpha or beta request query
+            parameters are set to true or a preview release is explicitly
+            requested.
+        confidence:
+          type: number
+          description: The confidence level for this attribute component.
+          format: double
+          example: 0.56448674
+        areaSqm:
+          type: number
+          description: |
+            The area of the attribute component in square meters, rounded to 1
+            decimal place.
+          example: 12.8
+        areaSqft:
+          type: number
+          description: |
+            The area of the attribute component in square feet, rounded to the
+            nearest integer.
+          example: 138.0
+        ratio:
+          type: number
+          description: |
+            The ratio of the attribute component area to the parent feature
+            area.
+          format: double
+          example: 0.13075127
+        dominant:
+          type: boolean
+          description: |
+            Indicates if the attribute component is dominant, relative to other
+            components of the same attribute.
+
+            This field is omitted if not available.
+        confidenceStats:
+          $ref: "#/components/schemas/RCCS"
+
+    Geometry:
+      type: object
+      description: GeoJSON geometry
+      discriminator:
+        propertyName: type
+      required:
+        - type
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#geometry-objects
+      properties:
+        type:
+          type: string
+          description: The geometry type.
+
+    Point2D:
+      type: array
+      maxItems: 2
+      minItems: 2
+      items:
+        type: number
+
+    Point:
+      type: object
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id2
+      allOf:
+        - $ref: "#/components/schemas/Geometry"
+        - properties:
+            coordinates:
+              $ref: "#/components/schemas/Point2D"
+
+    Polygon:
+      type: object
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id4
+      allOf:
+        - $ref: "#/components/schemas/Geometry"
+        - properties:
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Point2D"
+
+    MultiPolygon:
+      type: object
+      externalDocs:
+        url: http://geojson.org/geojson-spec.html#id6
+      allOf:
+        - $ref: "#/components/schemas/Geometry"
+        - properties:
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Point2D"
+
+    Versions:
+      type: object
+      description: |
+        Version information for supplementary data sources. Version information is present
+        only if the supplementary data source has been run.
+      properties:
+        roofSpotlightIndex:
+          $ref: "#/components/schemas/Version"
+        damage:
+          $ref: "#/components/schemas/Version"
+        defensibleSpace:
+          $ref: "#/components/schemas/PresentationOnlyVersion"
+        hurricaneScore:
+          $ref: "#/components/schemas/Version"
+        windScore:
+          $ref: "#/components/schemas/Version"
+        wildfireScore:
+          $ref: "#/components/schemas/Version"
+        hailScore:
+          $ref: "#/components/schemas/Version"
+        windHailRiskScore:
+          $ref: "#/components/schemas/Version"
+
+    PresentationOnlyVersion:
+      type: object
+      description: |
+        Version information for a supplementary data source that exposes only a
+        presentation version.
+      required:
+        - presentationVersion
+      properties:
+        presentationVersion:
+          type: string
+          description: The presentation version of the supplementary data source.
+          example: "1"
+
+    Version:
+      type: object
+      description: |
+        Version information for a supplementary data source.
+      required:
+        - presentationVersion
+      properties:
+        modelVersion:
+          type: string
+          description: |
+            The version of the AI model that produced the supplementary data.
+            Optional - omitted for supplementary data sources that do not
+            expose a distinct model version.
+          example: B.0rc0
+        presentationVersion:
+          type: string
+          description: The presentation version of the supplementary data source.
+          example: "2"
+
+    RSI:
+      type: object
+      description: |
+        The Roof Spotlight Index (RSI) is a proprietary measure of the condition
+        of a roof and factors that might affect its condition. 
+
+        To include this supplementary data in the response, add
+        `roofSpotlightIndex` to the `include` query parameter.
+
+        This property can only be present on `Roof` and/or `Building Lifecycle`
+        features. While normally added to `Roof` features, under certain
+        conditions where the roof is severely damaged or missing, it may be
+        added to `Building Lifecycle` instead.
+      properties:
+        value:
+          type: number
+          description: The RSI value in a range of 0 to 100, rounded to the nearest integer.
+          format: int
+          example: 94
+        confidence:
+          type: number
+          description: The confidence level for this RSI value, rounded to 2 decimal places.
+          format: double
+          example: 0.78
+
+    RCCS:
+      type: object
+      description: |
+        A collection of statistics that summarize the confidence levels of AI
+        predictions for the condition of a roof.
+
+        To include this supplementary data in the response, add
+        `roofConditionConfidenceStats` to the `include` query parameter.
+
+        This property is only present in `Roof Condition` feature attributes.    
+
+        Roof features with a footprint area exceeding 100,000sqm will be skipped 
+        and be marked as such. No roof condition confidence statistics will be 
+        produced in these cases.    
+
+    Damage:
+      type: object
+      description: |
+        Damage classifications provide a measure of the severity of damage to
+        a structure based on FEMA damage classification categories.
+
+        There are three tiers of classification provided:
+        - 5-tier (or `raw`), based on the FEMA 5-tier classification system composed of `Undamaged`,
+          `Affected`, `Minor`, `Major` and `Destroyed`
+        - 3-tier, composed of `UndamagedOrAffected`, `Minor` and `MajorOrDestroyed`
+        - 2-tier, composed of `UndamagedOrAffectedOrMinor` and `MajorOrDestroyed`
+
+        To include this supplementary data in the response, add
+        `damage` to the `include` query parameter. 
+
+        Damage is not supported on bulk requests. If the `include` query parameter
+        is set to `damage` when using bulk, the request will be rejected with a 400 Bad Request
+        response. If the `include` query parameter when using bulk is set to `all`, 
+        damage will be excluded.
+
+        This property can only present on `Building Lifecycle` features. If `parcelMode` is set to
+        `true`, the damage classification will be calculated using the clipped geometry of the 
+        feature if present. Otherwise, the geometry of the feature will be used with no clipping
+        applied.
+
+        Features with a footprint area exceeding 100,000sqm or that are not a polygon or 
+        multi-polygon geometry will be skipped and be marked as such. No damage classification
+        will be produced for these features.
+
+        By default, the latest version of the damage model will be used. To specify a particular
+        version of the damage model, use the `damageModelVersion` query parameter.
+      properties:
+        confidences:
+          type: object
+          properties:
+            raw:
+              type: object
+              properties:
+                Undamaged:
+                  type: number
+                  description: The confidence level that the building is undamaged, rounded to 3 decimal places.
+                  format: double
+                  example: 0.781
+                Affected:
+                  type: number
+                  description: The confidence level that the building is affected, rounded to 3 decimal places.
+                  format: double
+                  example: 0.221
+                Minor:
+                  type: number
+                  description: The confidence level that the building has minor damage, rounded to 3 decimal places.
+                  format: double
+                  example: 0.121
+                Major:
+                  type: number
+                  description: The confidence level that the building has major damage, rounded to 3 decimal places.
+                  format: double
+                  example: 0.151
+                Destroyed:
+                  type: number
+                  description: The confidence level that the building is destroyed, rounded to 3 decimal places.
+                  format: double
+                  example: 0.161
+              description: 5-tier damage classification confidence values. Note - values may not sum to 1.0 due to rounding.
+            3tier:
+              type: object
+              properties:
+                UndamagedOrAffected:
+                  type: number
+                  description: The confidence level that the building is undamaged or affected, rounded to 3 decimal places.
+                  format: double
+                  example: 0.781
+                Minor:
+                  type: number
+                  description: The confidence level that the building has minor damage, rounded to 3 decimal places.
+                  format: double
+                  example: 0.121
+                MajorOrDestroyed:
+                  type: number
+                  description: The confidence level that the building has major damage or is destroyed, rounded to 3 decimal places.
+                  format: double
+                  example: 0.151
+              description: 3-tier damage classification confidence values. Note - values may not sum to 1.0 due to rounding.
+            2tier:
+              type: object
+              properties:
+                UndamagedOrAffectedorMinor:
+                  type: number
+                  description: The confidence level that the building is undamaged or affected or has minor damage rounded to 3 decimal places.
+                  format: double
+                  example: 0.781
+                MajorOrDestroyed:
+                  type: number
+                  description: The confidence level that the building has major damage or is destroyed, rounded to 3 decimal places.
+                  format: double
+                  example: 0.151
+              description: 2-tier damage classification confidence values. Note - values may not sum to 1.0 due to rounding.
+        ratios:
+          type: array
+          items:
+            type: object
+            required:
+              - classId
+              - description
+              - ratioAbove50PctConf
+            properties:
+              classId:
+                type: string
+                description: |
+                  Unique ID for the class of this detection.
+                example: 6832955f-89c6-5cfd-874d-40c22aead943
+              ratioAbove50PctConf:
+                type: number
+                description: |
+                  Ratio of the 50% confidence area for the detected class, to total footprint area. Rounded to 3 decimal places.
+                example: 0.123
+              description:
+                type: string
+                description: |
+                  Description of the class of this detection.
+                example: Vegetation Debris
+          description: |
+            List of 50% confidence area ratios for each detection class.
+        skipped:
+          type: boolean
+          description: |
+            Indicates whether the damage classification was skipped for this feature.
+            This happens when the feature footprint exceeds the maximum size for damage
+            classification of 100,000sqm.
+
+            This field is omitted when processing was not skipped.
+
+    DefensibleSpace:
+      type: object
+      description: |
+        Provides information about defensible space coverage, area and risk object classes segmented by zones. 
+
+        Zones: Concentric buffered areas surrounding the aoi based on different distances.
+        - Zone 0: 0-5 feet
+        - Zone 1: 5-30 feet
+        - Zone 2: 30-100 feet
+
+        Risk Object Classes:
+        - Medium and High Vegetation with Woody Vegetation
+        - Yard Debris
+        - Roof
+
+        To include this supplementary defensible space data in the response, set the `include` query parameter to `defensibleSpace`. 
+
+        This property is returned only for features identified as a `footprint`, which can be either `Roof` (default), or
+        `Building Lifecycle` (fallback, used when Roof is significantly damaged or missing. 
+
+        If parcelMode = true: defensible space is calculated using the clipped geometry of the feature. 
+        If parcelMode = false or omitted: the original, unclipped geometry is used.
+      properties:
+        skipped:
+          description: |
+            Indicates that the processing for defensible space have been skipped. When this happens, the zone buffers are omitted.
+            This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+            This field is omitted when processing was not skipped.
+          type: boolean
+        zones:
+          description: |
+            The defensible space zone buffers.
+          type: array
+          items:
+            $ref: '#/components/schemas/ZoneDefensibleSpace'
+
+    ZoneDefensibleSpace:
+      type: object
+      description: Concentric buffered areas surrounding the building footprint.
+      required:
+        - zoneId
+        - zoneInnerDistanceM
+        - zoneInnerDistanceFt
+        - zoneOuterDistanceM
+        - zoneOuterDistanceFt
+        - zoneGeometry
+        - zoneAreaSqm
+        - zoneAreaSqft
+        - defensibleSpaceAreaSqft
+        - defensibleSpaceAreaSqm
+        - totalRiskObjectAreaSqft
+        - totalRiskObjectCoverageRatio
+        - defensibleSpaceCoverageRatio
+      properties:
+        zoneId:
+          description: Unique identifier for the zone.
+          type: integer
+        zoneInnerDistanceM:
+          description: Inner boundary of the zone measured from the outer boundary of the building footprint (in meters).
+          type: number
+        zoneInnerDistanceFt:
+          description: Inner boundary of the zone measured from the outer boundary of the building footprint (in feet).
+          type: number
+        zoneOuterDistanceM:
+          description: Outer boundary of the zone measured from the inner boundary of the zone (in meters).
+          type: number
+        zoneOuterDistanceFt:
+          description: Outer boundary of the zone measured from the inner boundary of the zone (in feet).
+          type: number
+        zoneGeometry:
+          description: The geometry of the zone, typically a ring or doughnut shape.
+          oneOf:
+            - $ref: "#/components/schemas/Polygon"
+            - $ref: "#/components/schemas/MultiPolygon"
+          discriminator:
+            propertyName: type
+        zoneAreaSqm:
+          description: Total area of zone in square meters.
+          type: number
+        zoneAreaSqft:
+          description: Total area of zone in square feet.
+          type: number
+        defensibleSpaceAreaSqm:
+          description: Area within the zone that is considered defensible space, measured in square meters.
+          type: number
+        defensibleSpaceAreaSqft:
+          description: Area within the zone that is considered defensible space, measured in square feet.
+          type: number
+        totalRiskObjectAreaSqm:
+          description: Total area occupied by all risk objects in the zone, in square meters.
+          type: number
+        totalRiskObjectAreaSqft:
+          description: Total area occupied by all risk objects in the zone, in square feet.
+          type: number
+        defensibleSpaceCoverageRatio:
+          description: Total area occupied by defensible space with respect to the total zone area.
+          type: number
+        totalRiskObjectCoverageRatio:
+          description: Ratio of risk object area to total zone area.
+          type: number
+        riskObjects:
+          description: List of risk objects detected in the zone.
+          type: array
+          items:
+            $ref: '#/components/schemas/ZoneRiskObject'
+
+    ZoneRiskObject:
+      type: object
+      description: Risk object feature class identified within the zone.
+      required:
+        - classId
+        - description
+        - geometry
+        - areaSqm
+        - areaSqft
+        - ratio
+      properties:
+        classId:
+          description: External feaure class ID.
+          type: string
+        description:
+          type: string
+        geometry:
+          description: The geometry of the risk object.
+          oneOf:
+            - $ref: "#/components/schemas/Polygon"
+            - $ref: "#/components/schemas/MultiPolygon"
+          discriminator:
+            propertyName: type
+        areaSqm:
+          description: Total coverage area of the risk feature class in the zone in square meters.
+          type: number
+        areaSqft:
+          description: Total coverage area of the risk feature class in the zone in square feet.
+          type: number
+        ratio:
+          description: Ratio of coverage risk feature class with respect to the zone area.
+          type: number
+
+    HurricaneScore:
+      type: object
+      description: Provides information about hurricane vulnerability score, probability and risk factor.
+      properties:
+        skipped:
+          description: |
+            Indicates that the processing for hurricane score have been skipped. When this happens, the rest of the fields are omitted.
+            This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+            This field is omitted when processing was not skipped.
+          type: boolean
+        vulnerabilityScore:
+          type: integer
+          description: |
+            A 1-5 score representing how well protected the structure is to withstand hurricane force winds,
+            5 being best protection and 1 being the worst protection / most vulnerable.
+        vulnerabilityProbability:
+          type: number
+          description: |
+            The probability that the building will be damaged if impacted by hurricane force winds.
+        vulnerabilityRateFactor:
+          type: number
+          description: |
+            The rate we have filed with states that can be used to adjust premium up or down based on the hurricane vulnerability (so a 1.55 for a hurricane vulnerability score of 1 means the insurer can charge 55% more premium due to this score).
+        femaAnnualHurricaneFrequency:
+          type: number
+          description: |
+            Annualized average of hurricane events for the census tract the building is located in, according to the FEMA National Risk Index model.
+            Only available for US region.
+        femaVersion:
+          type: string
+          description: |
+            The version of the FEMA model from which the data was taken.
+        modelInputFeatures:
+          $ref: '#/components/schemas/HurricaneModelInputFeatures'
+
+    HurricaneModelInputFeatures:
+      type: object
+      description: |
+        The inputs provided to the hurricane model to calculate scores.
+      properties:
+        defensibleSpaceWeightedCoverage:
+          type: number
+          description: Weighted average of defensible space coverage.
+        shinglePresent:
+          type: integer
+          description: Represents if asphalt shingles are detected.
+        hipPresent:
+          type: integer
+          description: Represents if hip roof is detected.
+        flatPresent:
+          type: integer
+          description: Represents if asphalt shingles are present.
+        roofStainingRatio:
+          type: number
+          description: Ratio of roof covered by staining.
+        roofRustingRatio:
+          type: number
+          description: Ratio of roof covered by rust.
+        wornShinglesRatio:
+          type: number
+          description: Ratio of roof covered by worn shingles.
+        missingRoofTileOrShingleRatio:
+          type: number
+          description: Ratio of roof covered by missing tiles or shingles.
+        treeOverhangRatio:
+          type: number
+          description: Ratio of roof covered by tree overhang.
+        roofPatchingRatio:
+          type: number
+          description: Ratio of roof covered by patching.
+
+    WindScore:
+      title: Wind score
+      type: object
+      properties:
+        skipped:
+          description: |
+            Indicates that the processing for wind score has been skipped. When this happens, the rest of the fields are omitted.
+            This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+            This field is omitted when processing was not skipped.
+          type: boolean
+        vulnerabilityScore:
+          type: integer
+          description: |
+            Discrete value 1–5 representing how well protected the structure is to withstand wind where 1 is the most vulnerable, and 5 is the least vulnerable.
+        vulnerabilityProbability:
+          type: number
+          description: |
+            Raw model probability that the building will be damaged if impacted by wind. This value is binned into 1-5 wind vulnerability probability score.
+        vulnerabilityRateFactor:
+          type: number
+          description: |
+            Filed rate factor derived from the wind vulnerability score. This value can be used as a rate multiplier to adjust premiums up or down based on building susceptibility to wind damage.
+        riskScore:
+          type: integer
+          description: |
+            Combination of wind vulnerability score and FEMA annual wind frequency where 1 is the most likely to experience a wind claim, and 5 is the least likely to experience a wind claim.
+            Only available for US region.
+        riskRateFactor:
+          type: number
+          description: |
+            Filed rate factor derived from the wind risk score. This value can be used as a rate multiplier to adjust premiums up or down based on building likelihood of wind claim.
+            Only available for US region.
+        femaAnnualWindFrequency:
+          type: number
+          description: |
+            Annualized average of strong wind events for the census tract the building is located in, according to the FEMA National Risk Index model.
+            Only available for US region.
+        femaVersion:
+          type: string
+          description: |
+            The version of the FEMA model from which the data was taken.
+        modelInputFeatures:
+          $ref: '#/components/schemas/WindModelInputFeatures'
+
+    WindModelInputFeatures:
+      title: Wind model input features
+      description: |
+        The inputs provided to the wind model to calculate scores.
+      type: object
+      properties:
+        pitchedRoofPresent:
+          type: integer
+          description: |
+            Boolean: 1 if pitched roof detected.
+        metalPresent:
+          type: integer
+          description: |
+            Boolean: 1 if metal roof detected.
+        zone1RoofPresent:
+          type: integer
+          description: |
+            Boolean: 1 if roof detected in defensible space zone 1.
+        zone1or2RoofPresent:
+          type: integer
+          description: |
+            Boolean: 1 if roof detected in defensible space zone 1 or 2.
+        compromisedShinglesPresent:
+          type: integer
+          description: |
+            Boolean: 1 if compromised shingles detected.
+        logFootprintArea:
+          type: number
+          description: |
+            Log of footprint area.
+        logCompromisedStructure:
+          type: number
+          description: |
+            Log of sum of compromised structure features.
+        logStaining:
+          type: number
+          description: |
+            Log-transformed value of roof staining ratio.
+
+    HailScore:
+      title: Hail score
+      type: object
+      properties:
+        skipped:
+          description: |
+            Indicates that the processing for hail score has been skipped. When this happens, the rest of the fields are omitted.
+            This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+            This field is omitted when processing was not skipped.
+          type: boolean
+        vulnerabilityScore:
+          type: integer
+          description: |
+            Discrete value 1–5 representing how well protected the structure is to withstand hail where 1 is the most vulnerable, and 5 is the least vulnerable.
+        vulnerabilityProbability:
+          type: number
+          description: |
+            Raw model probability that the building will be damaged if impacted by hail. This value is binned into 1-5 hail vulnerability probability score.
+        vulnerabilityRateFactor:
+          type: number
+          description: |
+            Filed rate factor derived from the hail vulnerability score. This value can be used as a rate multiplier to adjust premiums up or down based on building susceptibility to hail damage.
+        riskScore:
+          type: integer
+          description: |
+            Combination of hail vulnerability score and FEMA annual hail frequency where 1 is the most likely to experience a hail claim, and 5 is the least likely to experience a hail claim.
+            Only available for US region.
+        riskRateFactor:
+          type: number
+          description: |
+            Filed rate factor derived from the hail risk score. This value can be used as a rate multiplier to adjust premiums up or down based on building likelihood of hail claim.
+            Only available for US region.
+        femaAnnualHailFrequency:
+          type: number
+          description: |
+            The average annual hail frequency for the census tract the building is located in, according to the FEMA National Risk Index model.
+            Only available for US region.
+        femaVersion:
+          type: string
+          description: |
+            The version of the FEMA model from which the data was taken.
+        modelInputFeatures:
+          $ref: '#/components/schemas/HailModelInputFeatures'
+
+    HailModelInputFeatures:
+      title: Hail model input features
+      description: |
+        Dictionary of model-ready features after transformations.
+      type: object
+      properties:
+        flatPresent:
+          type: integer
+          description: |
+            Boolean: 1 if flat roof detected.
+        shinglePresent:
+          type: integer
+          description: |
+            Boolean: 1 if shingle roof detected.
+        logStaining:
+          type: number
+          description: |
+            Log-transformed value of roof staining ratio.
+        logFootprintArea:
+          type: number
+          description: |
+            Log of footprint area.
+
+    WildfireScore:
+      title: Wildfire score
+      type: object
+      properties:
+        skipped:
+          description: |
+            Indicates that the processing for wildfire score has been skipped. When this happens, the rest of the fields are omitted.
+            This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+            This field is omitted when processing was not skipped.
+          type: boolean
+        vulnerabilityScore:
+          type: integer
+          description: |
+            Discrete value 1–5 representing how well protected the structure is to withstand wildfire where 1 is the most vulnerable, and 5 is the least vulnerable.
+        vulnerabilityProbability:
+          type: number
+          description: |
+            Raw model probability that the building will be damaged if impacted by wildfire. This value is binned into 1-5 wildfire vulnerability probability score.
+        vulnerabilityRateFactor:
+          type: number
+          description: |
+            Filed rate factor derived from the wildfire vulnerability score. This value can be used as a rate multiplier to adjust premiums up or down based on building susceptibility to wildfire damage.
+        femaAnnualWildfireFrequency:
+          type: number
+          description: |
+            The average annual wildfire frequency for the census tract the building is located in, according to the FEMA National Risk Index model. 
+            Only available for US region.
+        femaVersion:
+          type: string
+          description: |
+            The version of the FEMA model from which the data was taken.
+        modelInputFeatures:
+          $ref: '#/components/schemas/WildfireModelInputFeatures'
+
+    WildfireModelInputFeatures:
+      title: Wildfire model input features
+      description: |
+        Dictionary of model-ready features after transformations.
+      type: object
+      properties:
+        fireResistantMaterialPresent:
+          type: integer
+          description: |
+            Boolean: 1 if fire resistant materials (e.g. clay tile) are present on the roof.
+        roofDebrisRatio:
+          type: number
+          description: |
+            Fraction of roof area with roof debris.
+        treeOverhangRatio:
+          type: number
+          description: |
+            Fraction of roof area with tree overhang.
+        roofRustingRatio:
+          type: number
+          description: |
+            Fraction of roof area with rusting metal.
+        roofWithTemporaryRepairRatio:
+          type: number
+          description: |
+            Fraction of roof area with temporary repairs (e.g. tarps, plywood).
+        indefensibleSpaceWeightedAverage:
+          type: number
+          description: |
+            1 - (Weighted average of defensible space ratio across zones).
+        yardDebrisWeightedAverage:
+          type: number
+          description: |
+            Weighted average of yard debris ratio across defensible space zones.
+
+    WindHailRiskScore:
+      title: Wind and hail risk score
+      type: object
+      properties:
+        skipped:
+          description: |
+            Indicates that the processing for wind and hail risk score has been skipped. When this happens, the rest of the fields are omitted.
+            This usually occurs either when the buffer zones, when applied, extend beyond the resource boundary.
+
+            This field is omitted when processing was not skipped.
+          type: boolean
+        riskScore:
+          type: integer
+          description: |
+            Combined risk score from wind and hail where 1 is the most likely to experience a wind or hail claim, and 5 is the least likely to experience a wind or hail claim.
+            Only available for US region.
+        riskRateFactor:
+          type: number
+          description: |
+            Filed rate factor derived from the wind and hail risk score. This value can be used as a rate multiplier to adjust premiums up or down based on building likelihood of wind or hail claim.
+            Only available for US region.
+        modelInputFeatures:
+          $ref: '#/components/schemas/WindHailModelInputFeatures'
+
+    WindHailModelInputFeatures:
+      title: Wind and hail model input features
+      description: |
+        The inputs provided to the wind and hail model to calculate scores.
+      type: object
+      properties:
+        windRiskScore:
+          type: integer
+          description: |
+            The wind risk score used as input to the combined wind and hail model.
+        hailRiskScore:
+          type: integer
+          description: |
+            The hail risk score used as input to the combined wind and hail model.
+
+    RollupsJSONResult:
+      type: object
+      properties:
+        systemVersion:
+          type: string
+          description: The version of the system used to generate the AI data.
+        perspective:
+          type: string
+          description: The perspective that was used to generate the AI data.
+        resourceId:
+          type: string
+          description: The ID of the survey resource.
+        surveyId:
+          type: string
+          description: The ID of the survey associated with the survey resource.
+        surveyDate:
+          type: string
+          description: The date of the survey capture.
+          format: date
+          example: "2019-09-27"
+        credits:
+          type: integer
+          example: 1
+          description: The number of credits used for this request.
+        link:
+          type: string
+          example: https://apps.nearmap.com/maps/#/@-33.7251728,151.2955012,20.00z,0d/V/20190927
+          description: The MapBrowser link to the location that was requested.
+        rollups:
+          $ref: "#/components/schemas/JSONRollups"
+        geomatchedAddress:
+          type: string
+          example: 10897 S River Front Pkwy Ste 150, South Jordan, UT 84095-5650, USA
+          description: Matched address used for geocoded requests.
+        reference:
+          type: string
+          example: "123456"
+          description: |
+            The reference passed in via the X-Nearmap-Ext-Reference request
+            header value, if it is present. It is up to the user to track the
+            semantics of this field. E.g. they may wish to interpret it as an
+            insurance policy ID.
+        extentMinX:
+          type: number
+          description: Approximate minimum longitude of the AOI extent.
+        extentMinY:
+          type: number
+          description: Approximate minimum latitude of the AOI extent.
+        extentMaxX:
+          type: number
+          description: Approximate maximum longitude of the AOI extent.
+        extentMaxY:
+          type: number
+          description: Approximate maximum latitude of the AOI extent.
+        prerelease:
+          type: boolean
+          description: |
+            Indicates whether or not the system version used to serve the
+            request is a preview release. If it's not a preview release, then
+            it's a regular GA release. This field is only populated if the
+            alpha or beta request query parameters are set to true or a preview
+            release is explicitly requested.
+
+      required:
+        - systemVersion
+        - perspective
+        - resourceId
+        - surveyId
+        - surveyDate
+        - credits
+        - link
+        - rollups
+        - extentMinX
+        - extentMinY
+        - extentMaxX
+        - extentMaxY
+
+    JSONRollups:
+      type: object
+      description: |
+        The set of aggregated values computed out of AI features at the location requested.
+
+        The rollups can be grouped by one or more combinations of the feature class (e.g. roof),
+        primary feature of the requested location (e.g. primary), feature attributes (e.g. 3D),
+        or feature components (e.g. roof pitch).
+      additionalProperties:
+        $ref: "#/components/schemas/JSONRollup"
+
+    JSONRollup:
+      type: object
+      description: |
+        A single aggregated value computed out of AI features at the location requested,
+        keyed by a unique and stable ID designed for programmatic use cases.
+      properties:
+        value:
+          oneOf:
+            - type: boolean
+            - type: number
+            - type: string
+          description: |
+            The computed aggregated value for the rollup.
+
+            This value can be "null"; for example, when no roof feature is detected
+            in the requested location, its confidence will be set to "null".
+          example: 170.9
+        description:
+          type: string
+          description: A human-readable description of the rollup.
+          example: total clipped area (sq. m) of solar panel
+      required:
+        - value
+        - description
+
+    RollupsGeoJSONResult:
+      type: object
+      properties:
+        type:
+          type: string
+          description: This is always "FeatureCollection".
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          description: |
+            This array contains a single "feature" representing the requested location.
+          items:
+            $ref: "#/components/schemas/GeoJSONFeature"
+      required:
+        - type
+        - features
+
+    GeoJSONFeature:
+      type: object
+      properties:
+        type:
+          type: string
+          description: This is always "Feature".
+          enum:
+            - Feature
+        geometry:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The GeoJSON geometry type of the requested location.
+              enum:
+                - Polygon
+            coordinates:
+              type: array
+              description: |
+                The collection of rings defining the Polygon.
+
+                This should always only consist of a single ring (more specifically, rectangle)
+                describing the extent of the requested location.
+              maxItems: 1
+              items:
+                $ref: "#/components/schemas/GeoJSONPolygonRing"
+        properties:
+          oneOf:
+            - type: boolean
+            - type: number
+            - type: string
+          description: |
+            A dictionary of rollups keyed by the rollup identifier concatenated with
+            the rollup field type (one of: "value" or "description"), and delimited by underscore.
+
+            Each identifier will always have both a "description" and "value" field.
+          example:
+            "5a5cb214-eee3-4fdd-bfce-d21e9793cf6a_value": 170.9
+            "5a5cb214-eee3-4fdd-bfce-d21e9793cf6a_description": "total clipped area (sq. m) of solar panel"
+      required:
+        - type
+        - geometry
+        - properties
+
+    GeoJSONPolygonRing:
+      type: array
+      description: A collection of coordinate pairs that define the Polygon ring.
+      minItems: 5
+      items:
+        $ref: "#/components/schemas/GeoJSONCoordinate"
+      example: [[-97.72889, 30.30097], [-97.72891, 30.30094], [-97.72869, 30.30084], [-97.72868, 30.30087], [-97.72889, 30.30097]]
+
+    GeoJSONCoordinate:
+      type: array
+      description: |
+        An ordered pair of floating point numbers in the following sequence: longitude, latitude.
+      items:
+        type: number
+        format: double
+      example: [149.65576, -32.37996]
+
+    Error:
+      title: Error response
+      type: object
+      description: Error response.
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+
+    PacksReport:
+      title: Packs report
+      type: object
+      description: Packs available to the user.
+      properties:
+        packs:
+          type: array
+          description: The available packs.
+          items:
+            $ref: "#/components/schemas/PackReport"
+      required:
+        - packs
+
+    PackReport:
+      title: Pack report
+      type: object
+      description: Details of an available pack.
+      properties:
+        code:
+          type: string
+          example: roof_char
+          description: |
+            The pack code, as appears in the 'packs' query parameter of the
+            features.json endpoint
+        featureClasses:
+          type: array
+          description: The feature classes available in the pack.
+          items:
+            $ref: "#/components/schemas/PacksEndpointClass"
+        attributeClasses:
+          type: array
+          description: The attribute classes available in the pack.
+          items:
+            $ref: "#/components/schemas/PacksEndpointClass"
+      required:
+        - code
+        - featureClasses
+        - attributeClasses
+
+    PacksEndpointClass:
+      title: Class report
+      type: object
+      description: |
+        Details of a class available within a pack. The class can either be a
+        feature class or an attribute class.
+      properties:
+        id:
+          type: string
+          description: A unique identifier that can be used to refer to the class.
+          example: 1344cc38-cf6f-42fd-a2ca-6e7e1dd854c4
+        description:
+          type: string
+          description: The user friendly human description of the class.
+          example: Shingle roof
+        supportedVersions:
+          type: array
+          description: The system versions that this class is available in.
+          example: ["gen3-winter_sunrise-1.1"]
+          items:
+            type: string
+      required:
+        - id
+        - description
+        - supportedVersions
+
+    ClassesReport:
+      title: Classes report
+      type: object
+      description: Classes available to the user.
+      properties:
+        classes:
+          type: array
+          description: The available feature and attribute classes.
+          items:
+            $ref: "#/components/schemas/ClassesEndpointClass"
+      required:
+        - classes
+
+    ClassesEndpointClass:
+      title: Feature Attribute Class report
+      type: object
+      description: Details of a class. The class can either be a feature class or an attribute class.
+      properties:
+        type:
+          type: string
+          description: The class type.
+          enum:
+            - Attribute
+            - Feature
+          example: Attribute
+        id:
+          type: string
+          description: A unique identifier that can be used to refer to the class.
+          example: 1344cc38-cf6f-42fd-a2ca-6e7e1dd854c4
+        description:
+          type: string
+          description: The user friendly human description of the class.
+          example: Shingle roof
+        schema:
+          type: object
+          description: |
+            A JSON Schema object that represents the schema of attributes with
+            this attribute class ID. More details of JSON Schema can be found
+            at https://json-schema.org/. This field is only applicable for
+            attribute classes.
+        availability:
+          type: array
+          description: Details about the availability of the class.
+          items:
+            type: object
+            description: |
+              Describes the availability of a class within a system release and
+              perspective combination.
+            required:
+              - systemVersion
+              - perspective
+              - status
+            properties:
+              systemVersion:
+                type: string
+                description: The version of the system used to generate the AI Data.
+              perspective:
+                type: string
+                description: The perspective used to generate the AI data.
+                enum:
+                  - Vert
+                  - TrueOrtho
+              status:
+                type: string
+                description: |
+                  The stage of the software release cycle that the class is in
+                  for the system version and perspective combination.
+                enum:
+                  - prod
+                  - beta
+                  - alpha
+
+    CoverageResult:
+      type: object
+      required: ["result"]
+      properties:
+        result:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - surveyId
+              - captureDate
+              - systemVersion
+              - perspective
+              - classes
+            properties:
+              id:
+                type: string
+                description: The ID of the survey resource.
+                example: ae6f93cc-befc-4538-b87b-4733909c5cc1
+              surveyId:
+                type: string
+                description: ID of the survey associated with the survey resource.
+                example: aa8fd559-c2e9-4e9a-82e6-449c37f0b363
+              captureDate:
+                type: string
+                description: The capture date of the survey associated with the survey resource.
+                format: date
+                example: "2019-09-27"
+              systemVersion:
+                type: string
+                description: The system version of the survey resource.
+                example: gen3-winter_sunrise-1.1
+              perspective:
+                type: string
+                enum:
+                  - Vert
+                  - TrueOrtho
+                description: The perspective of the survey resource.
+                example: Vert
+              classes:
+                type: array
+                description: |
+                  The list of classes available in the survey resource. This
+                  includes both feature classes and attribute classes.
+                items:
+                  type: object
+                  required: ["id"]
+                  properties:
+                    id:
+                      type: string
+                      description: |
+                        The class ID. Details about the class are available via
+                        the `classes.json` endpoint.
+                      example: 2a29365e-e1c9-4be6-b5c2-233f2de6d845
+              partial:
+                type: boolean
+                description: >
+                  Indicates that the resource only has prediction generated in certain areas.  While it may have coverage in the AOI, it may not have coverage
+                  in other areas of the survey boundary.
+
+  parameters:
+    since:
+      name: since
+      in: query
+      description: |
+        Since is a date (`YYYY-MM-DD`) specifying that the capture must be on or
+        after the given date (if not provided then the first available survey
+        date in the location is assumed).
+      required: false
+      schema:
+        type: string
+      example: "2018-08-18"
+
+    until:
+      name: until
+      in: query
+      description: |
+        Until is a date (`YYYY-MM-DD`) specifying that the capture date must be
+        on or before the given date (if not provided then the current date is
+        assumed).
+      required: false
+      schema:
+        type: string
+      example: "2021-08-18"
+
+    bulk:
+      name: bulk
+      in: query
+      description: |
+        Bulk determines whether if the request is part of a large batch of
+        requests, meaning requests will not be rate-limited.
+      required: false
+      schema:
+        type: boolean
+        default: false
+
+    packs:
+      name: packs
+      in: query
+      description: |
+        Packs accepts a list of comma-separated product packs. This returns
+        specific features and attributes under the pack. The response will
+        return all features and attributes that the user is entitled to if no
+        packs are provided.
+
+        It cannot be used with the `classes` query parameter. This parameter is
+        ignored if used with an empty value.
+      required: false
+      schema:
+        type: string
+      example: solar,pool,roof_char
+    classes:
+      name: classes
+      in: query
+      description: |
+        Classes accepts a list of comma-separated feature class IDs. Features
+        classes not requested will be filtered out of the response. The full
+        list of available feature classes can be obtained by using the
+        `classes.json` endpoint (Feature class IDs are in the `id` field for
+        classes of type `Feature`). The response will include all feature
+        classes that the user is entitled to if the query parameter is not
+        specified.
+
+        It cannot be used with the `packs` query parameter. This parameter is
+        ignored if used with an empty value.
+      required: false
+      schema:
+        type: string
+      example: 2e0bd9e3-3b67-4990-84dc-1b4812fdd02b,0339726f-081e-5a6e-b9a9-42d95c1b5c8a
+
+    optionalPolygon:
+      name: polygon
+      in: query
+      description: |
+        Represents the Area Of Interest (AOI) to query against. It is depicted
+        by a set of points (longitude/latitude pairs) where the first and last
+        point must be the same. The polygon must not self-intersect.
+
+        It cannot be used with the address geocoding parameters
+        (`streetAddress`, `city`, `state`, `zip` and `country`), or with an
+        `aoi` defined in the request body for the HTTP POST variant endpoints.
+
+        Must be omitted when TXv3 token authorization is used.
+      required: false
+      example: "-96.15764,41.22445,-96.15716,41.22444,-96.15716,41.22461,-96.15764,41.22461,-96.15764,41.22445"
+      schema:
+        type: string
+
+    coveragePolygon:
+      name: polygon
+      in: query
+      description: |
+        The polygon to check for coverage, as a set of points where the first
+        and last point must be the same.
+
+        It cannot be used with the `point` parameter.
+      required: false
+      example: "-96.15764,41.22445,-96.15716,41.22444,-96.15716,41.22461,-96.15764,41.22461,-96.15764,41.22445"
+      schema:
+        type: string
+
+    coveragePoint:
+      name: point
+      in: query
+      description: |
+        The point to check for coverage, as a comma separate longitude and latitude.
+
+        It cannot be used with the `polygon` query parameter.
+      required: false
+      example: "-96.15764,41.22445"
+      schema:
+        type: string
+
+    streetAddress:
+      name: streetAddress
+      in: query
+      description: |
+        The street address for a geocoded request. Should consist of the street
+        number, street name, and street type.
+
+        It cannot be used with the `polygon` query parameter.
+
+        Must be omitted when TXv3 token authorization is used.
+      required: false
+      example: 422 Towne Park Trl
+      schema:
+        type: string
+
+    city:
+      name: city
+      in: query
+      description: |
+        The city, suburb, or locality for a geocoded request.
+
+        It cannot be used with the `polygon` query parameter.
+
+        Must be omitted when TXv3 token authorization is used.
+      required: false
+      example: Austin
+      schema:
+        type: string
+
+    state:
+      name: state
+      in: query
+      description: |
+        The two-letter state code for a geocoded request.
+
+        It cannot be used with the `polygon` query parameter.
+
+        Must be omitted when TXv3 token authorization is used.
+      required: false
+      example: TX
+      schema:
+        type: string
+
+    zip:
+      name: zip
+      in: query
+      description: |
+        The five-digit ZIP code or nine-digit ZIP+4 code for US addresses or the
+        four-digit postal code for AU addresses for a geocoded request.
+
+        It cannot be used with the `polygon` query parameter.
+
+        Must be omitted when TXv3 token authorization is used.
+      required: false
+      example: "78751"
+      schema:
+        type: string
+
+    country:
+      name: country
+      in: query
+      description: |
+        The two-letter country code for the geocoded request. Only supports US
+        and AU. Defaults to US when geocoding is used without supplying the
+        country code.
+
+        It cannot be used with the `polygon` query parameter.
+
+        Must be omitted when TXv3 token authorization is used.
+      required: false
+      example: US
+      schema:
+        type: string
+        enum:
+          - US
+          - AU
+
+    surveyResourceId:
+      name: surveyResourceId
+      in: path
+      description: The ID of the survey resource to fetch AI data from.
+      required: true
+      example: 6c6abf86-1727-4472-8e91-7defb3c7ae3c
+      schema:
+        type: string
+
+    reference:
+      name: X-Nearmap-Ext-Reference
+      in: header
+      description: Allows a reference string to be echoed back opaquely in the body of the response.
+      required: false
+      example: "123456"
+      schema:
+        type: string
+
+    systemVersion:
+      name: systemVersion
+      in: query
+      description: |
+        If specified, causes the API to only consider the given system version
+        when choosing which survey resource to use for serving the request.
+      required: false
+      schema:
+        type: string
+      example: gen5-tranquil_pool-1.0
+
+    systemVersionPrefix:
+      name: systemVersionPrefix
+      in: query
+      description: |
+        If specified, causes the API to only consider system versions that match
+        the prefix when choosing which survey resource to use for serving the
+        request.
+      required: false
+      schema:
+        type: string
+      example: gen5
+
+    alpha:
+      name: alpha
+      in: query
+      description: |
+        When set to true, causes alpha classes to be included in results.
+      required: false
+      schema:
+        type: boolean
+        default: false
+
+    beta:
+      name: beta
+      in: query
+      description: |
+        When set to true, causes beta classes to be included in results.
+      required: false
+      schema:
+        type: boolean
+        default: false
+
+    prerelease:
+      name: prerelease
+      in: query
+      description: |
+        When set to true, causes pre-release system versions to be included in results.
+      required: false
+      schema:
+        type: boolean
+        default: false
+
+    order:
+      name: order
+      in: query
+      required: false
+      description: |
+        The order by which the surveys are sorted (using capture date) when the
+        API selects the survey resource to use for serving the request.
+      schema:
+        enum:
+          - latest
+          - earliest
+        default: latest
+
+    perspective:
+      name: perspective
+      in: query
+      required: false
+      description: |
+        Accepts a comma-separated list of perspectives, limiting the coverage
+        lookup to just those perspectives. The available perspectives are Vert
+        and TrueOrtho.
+
+        This parameter is ignored if used with an empty value.
+      schema:
+        type: string
+        default: Vert
+      example: Vert,TrueOrtho
+
+    3dCoverage:
+      name: 3dCoverage
+      in: query
+      required: false
+      description: |
+        When set to true, performs coverage check using the 3D attribute
+        coverage boundary of the resource.
+      schema:
+        type: boolean
+        default: false
+
+    3dCoverageFeature:
+      name: 3dCoverage
+      in: query
+      required: false
+      description: |
+        Use the 3D attribute boundary when the API selects the survey resource
+        to use for serving the request. Othewise, the regular resource boundary
+        will be used.
+      schema:
+        type: boolean
+        default: false
+
+    excludePartialResources:
+      name: excludePartialResources
+      in: query
+      required: false
+      description: >
+        Partial resources are AI resources that only has prediction generated at
+        certain areas of the survey boundary as compared to our conventional
+        fully processed resource. These types of resources are generally
+        available by default. This flag opts-out from serving partial resources.
+      schema:
+        type: boolean
+        default: false
+
+    parcelMode:
+      name: parcelMode
+      in: query
+      required: false
+      description: |
+        When set to true, the API will treat the input AOI (or address) as a
+        parcel boundary. In this mode, the API will mark the features that are
+        considered to be part of the parcel with the `belongsToParcel` flag. 
+        Features that are part of single-parcel structures will be returned in
+        their entirety, while features that are part of multi-parcel structures 
+        will be clipped to the parcel boundary. In this case, the `clippedGeometry`
+        field will be added to the feature containing the geometry clipped to 
+        the parcel boundary. 
+                
+        In this mode, supplementary data calculations will also take into account
+        the parcel boundary and use the clipped geometry.
+
+        Parcel mode is only supported for gen6 system versions. If the resource
+        does not resolve to a gen6 resource, the API will not include parcel
+        mode data in the response and will not calculate supplementary data
+        using the clipped geometry.
+
+        See: https://developer.nearmap.com/docs/parcel-mode-user-guide for a technical
+        guide of the parcel mode algorithms.
+      schema:
+        type: boolean
+        default: false
+
+    rapid:
+      name: rapid
+      in: query
+      required: false
+      description: |
+        When set to true, the API will consider survey resources from rapid AI
+        pipelines when matching date-based criteria. Rapid AI pipelines provide
+        only a limited set of content, so `rapid` can only be used when requesting
+        the `Building lifecycle` feature class and (optionally) the `damage`
+        supplementary data source.
+
+        If additional classes are requested, if packs containing any feature 
+        classes other than `Building lifecycle` are requested, or if any other
+        supplementary data sources are requested, the API will return an error.
+
+        Rapid is only supported for gen6 system versions and when date-based
+        criteria is used.
+      schema:
+        type: boolean
+        default: false
+
+    includeSuppData:
+      name: include
+      in: query
+      required: false
+      description: |
+        A comma-separated list of supplementary data to include in the response.
+        The currently supported values are: `roofSpotlightIndex`,
+        `roofConditionConfidenceStats`, `damage`, `defensibleSpace`, `hurricaneScore`, `windScore`,
+        `hailScore`, `wildfireScore`, `windHailRiskScore`, or `all` for all types of supplementary 
+        data available given the user's entitlements and request type (bulk requests may support 
+        a subset of supplementary data sources). 
+
+        Inclusion of supplementary data is only supported for gen6 system
+        versions. If the resource does not resolve to a gen6 resource, the API will
+        not include supplementary data in the response. 
+      schema:
+        type: string
+        default: ""
+      example: roofSpotlightIndex,roofConditionConfidenceStats,damage,defensibleSpace,hurricaneScore,windScore
+
+    postcat:
+      name: postcat
+      in: query
+      required: false
+      description: |
+        When set, the API will consider only postcat resources (`true`), only
+        non-postcat resources (`false`), or any resource (`any`) for results.
+        This parameter is only available for users on the new pricing platforms.
+        For users on the legacy pricing platform, the selection of postcat or
+        non-postcat resources is determined by the packs (or classes) requested.
+      schema:
+        type: string
+        enum:
+          - "true"
+          - "false"
+          - any
+
+    damageModelVersion:
+      name: damageModelVersion
+      in: query
+      required: false
+      description: |
+        When set, the API will use the specified damage model version
+        when calculating damage supplementary data. If not set, the latest
+        damage model version available will be used.
+
+        Currently supported model versions are: `B.0` and `B.1` (latest).
+      schema:
+        type: string
+      example: "B.1"
+
+  responses:
+    features_ok:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FeatureResult"
+    features_bad_request:
+      description: Bad Request. There was a problem with the request parameters.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            Invalid polygon:
+              value:
+                code: INVALID_POLYGON
+                message: Input polygon must be a valid sequence of x,y coordinates.
+            Invalid since date:
+              value:
+                code: INVALID_SINCE
+                message: Date must be in YYYY-MM-DD format.
+            Invalid until date:
+              value:
+                code: INVALID_UNTIL
+                message: Date must be in YYYY-MM-DD format.
+            Invalid date range:
+              value:
+                code: INVALID_DATE_RANGE
+                message: Since date must be before until date.
+            Both polygon and address set:
+              value:
+                code: BOTH_POLYGON_AND_ADDRESS_SET
+                message: Only one of 'polygon' or address query parameters may be set, not both.
+            Neither polygon nor address set:
+              value:
+                code: NEITHER_POLYGON_NOR_ADDRESS_SET
+                message: No polygon or address query parameters provided. At least a polygon or address must be set.
+            Invalid address:
+              value:
+                code: INVALID_ADDRESS
+                message: All address fields must be set to valid non-empty values.
+            Unknown pack:
+              value:
+                code: UNKNOWN_PACK
+                message: foo is an unknown product pack
+            Packs and classes:
+              value:
+                code: PACKS_AND_CLASSES
+                message: Only one of 'packs' or 'classes' query parameters may be set, not both.
+            AOI exceeds maximum size:
+              value:
+                code: AOI_EXCEEDS_MAX_SIZE
+                message: AOI exceeds maximum size.
+            Parcel exceeds maximum size:
+              value:
+                code: PARCEL_EXCEEDS_MAX_SIZE
+                message: Address resolves to a parcel that exceeds maximum size.
+            Unknown feature class:
+              value:
+                code: UNKNOWN_CLASS
+                message: Unknown class foo.
+            Polygon too complex:
+              value:
+                code: POLYGON_TOO_COMPLEX
+                message: "Polygon or sum of Polygons must be constructed by at most 5000 points."
+            Parcel too complex:
+              value:
+                code: PARCEL_TOO_COMPLEX
+                message: "Address resolves to a parcel geometry that is too complex to serve."
+
+    generic_unauthorized:
+      description: Unauthorized
+      content:
+        text/plain:
+          examples:
+            Unauthorized:
+              value: "Unauthorized"
+
+    generic_forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            Auth failure:
+              value:
+                message: "Forbidden due to auth failure"
+    features_not_found:
+      description: Not Found. No data is available matching the request criteria.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            No survey resources found:
+              value:
+                message: "no survey resources found"
+    coverage_ok:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CoverageResult"
+    coverage_bad_request:
+      description: Bad request. There was a problem with the request parameters.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            No geometry provided:
+              value:
+                code: NO_GEOMETRY_PROVIDED
+                message: Polygon or point query parameter missing.
+            Invalid polygon:
+              value:
+                code: INVALID_POLYGON
+                message: Input polygon must be a valid sequence of x,y coordinates.
+            Invalid since date:
+              value:
+                code: INVALID_SINCE
+                message: Date must be in YYYY-MM-DD format.
+            Invalid until date:
+              value:
+                code: INVALID_UNTIL
+                message: Date must be in YYYY-MM-DD format.
+            Invalid date range:
+              value:
+                code: INVALID_DATE_RANGE
+                message: Since date must be before until date.
+
+    rollups_csv_ok:
+      description: OK response to the rollups.csv endpoint.
+      content:
+        text/csv:
+          schema:
+            type: string
+          examples:
+            csv:
+              summary: Example rollups CSV output
+              description: |
+                Two headers are returned, followed by the rollup data, all comma-delimited.
+
+                The first header contains the unique identifiers for each rollup.
+                These identifiers are stable and should not change over time.
+                This ID can be relied upon for programmatic use cases.
+
+                The second header consists of a human-readable description of the rollup.
+                Descriptions containing commas will be wrapped in quotes, and unwrapped otherwise.
+                This is not stable and could change over time.
+
+                "null" values in rollup data are represented as an empty value. For example,
+                confidence rollups can be "null" if no features were detected for that rollup.
+              value: |
+                011b6179-d17f-5744-9fad-49a4358c1a31,17b97c71-4ca8-596b-9dc5-c623024fc0a5
+                mansard confidence,"clipped area (sq. ft) of primary, roof rusting"
+                ,155
+
+    rollups_json_ok:
+      description: OK response to the rollups.json endpoint.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RollupsJSONResult"
+
+    rollups_geojson_ok:
+      description: OK response to the rollups.geojson endpoint.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RollupsGeoJSONResult"
+
+  requestBodies:
+    aoi:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              aoi:
+                description: |
+                  A GeoJSON object representing the requested AOI. Must be a
+                  GeoJSON polygon with no interior rings.
+
+                  It cannot be used with the `polygon` query parameter.
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: GeoJSON geometry type.
+                    enum:
+                      - Polygon
+                  coordinates:
+                    type: array
+                    description: The collection of rings defining the Polygon.
+                    items:
+                      $ref: "#/components/schemas/GeoJSONPolygonRing"
+
+    aoi_and_classes:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              aoi:
+                description: |
+                  A GeoJSON object representing the requested AOI. Must be a
+                  GeoJSON polygon with no interior rings.
+
+                  It cannot be used with the `polygon` query parameter.
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: GeoJSON geometry type.
+                    enum:
+                      - Polygon
+                  coordinates:
+                    type: array
+                    description: The collection of rings defining the Polygon.
+                    items:
+                      $ref: "#/components/schemas/GeoJSONPolygonRing"
+              classes:
+                description: |
+                  Classes accepts a list of class IDs. Features
+                  classes not requested will be filtered out of the response. The full
+                  list of available feature classes can be obtained by using the
+                  `classes.json` endpoint (Feature class IDs are in the `id` field for
+                  classes of type `Feature`). The response will include all feature
+                  classes that the user is entitled to if the query or body parameter is not
+                  specified.
+
+                  It cannot be used with the `packs` query parameter. This parameter is
+                  ignored if used with an empty value.
+                  It cannot be used with the `classes` query parameter.
+                type: array
+                example: ["2e0bd9e3-3b67-4990-84dc-1b4812fdd02b", "0339726f-081e-5a6e-b9a9-42d95c1b5c8a"]
+                items:
+                  type: string
