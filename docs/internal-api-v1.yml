@@ -1,0 +1,526 @@
+openapi: 3.0.0
+info:
+  title: Models
+  description: models
+  version: "1.0.0"
+  contact:
+    email: apiteam@nearmap.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+servers:
+  - description: Production
+    url: https://api.nearmap.com
+
+security:
+  - APIKeyQuery: []
+
+paths:
+  /roof-models/v1/tasks:
+    post:
+      tags:
+        - task
+      summary: Create task
+      description: |
+        Create a new task.
+      operationId: createTask
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/TaskCreateRequest'
+              required:
+                - address
+                - latitude
+                - longitude
+                - propertyType
+      responses:
+        '200':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /roof-models/v1/tasks/{taskId}:
+    get:
+      tags:
+        - task
+      summary: Check tasks status
+      description: |
+        Check task status
+      operationId: checkTaskStatus
+      parameters:
+        - name: taskId
+          in: path
+          description: |
+            Task ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task status check successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskStatus'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - task
+      summary: Update a specific task
+      description: |
+        Update a specific task, valid usages: \
+        Reopen a finished task: status must be "reopened", instruction also mandatory. Try to reopen a incomplete task will get 400 error with code INVALID_OPERATION. \
+        Cancel a incomplete task: status must be "cancelled", other fields will be ignored. Try to cancel a finished task will get 400 error with code INVALID_OPERATION.
+      operationId: updateTask
+      parameters:
+        - name: taskId
+          in: path
+          description: |
+            Task ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/TaskUpdateRequest'
+              required:
+                - status
+                - instructions
+      responses:
+        '200':
+          description: Task updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - task
+      summary: Cancel a non finished task
+      operationId: deleteTask
+      description: Delete a completed task will get 400 error with code INVALID_OPERATION.
+      parameters:
+        - name: taskId
+          in: path
+          description: |
+            Task ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /roof-models/v1/tasks/{taskId}/geometry.{format}:
+    get:
+      tags:
+        - task
+      summary: Get geometry output of task, can be JOSN or XML format.
+      description: |
+        Get geometry of a task. Get geometry from incomplete task will get 400 error with code: INVALID_OPERATION.
+      operationId: getGeometry
+      parameters:
+        - name: taskId
+          in: path
+          description: |
+            Task ID
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: path
+          description: |
+            Format of response
+          required: true
+          schema:
+            type: string
+            enum:
+              - "xml"
+              - "json"
+      responses:
+        '200':
+          description: Task geometry retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeometryResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/DataExport'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /roof-models/alive:
+    get:
+      tags:
+        - probe
+      summary: Liveness check, no parameters required(auth still required).
+      operationId: alive
+      description: |
+        Check liveness of models service
+      responses:
+        '200':
+          description: Service is healthy
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    APIKeyQuery:
+      name: apikey
+      type: apiKey
+      in: query
+
+  schemas:
+    TaskCreateRequest:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "2424 Kings Arms Dr, Atlanta, GA 30345"
+        externalCustomerId:
+          type: string
+          title: External customer identifier
+          description: This will allow our API users to send their own customer IDs to identify their own customers.
+          example: "d4d6fa1a-69c5-456c-8282-f0017bca3bc0"
+        externalOrderId :
+          type: string
+          title: External order identifier
+          description: This will allow our API users to send their own order IDs to identify different orders made by their own customers.
+          example: "order-f0017bca3bc0"
+        instructions:
+          type: string
+          maxLength: 600
+          example: "Include sheds"
+        latitude:
+          type: number
+          format: double
+          example: 33.856788
+        longitude:
+          type: number
+          format: double
+          example: -84.257305
+        propertyType:
+          $ref: '#/components/schemas/PropertyType'
+        taskPriority:
+          $ref: '#/components/schemas/TaskPriority'
+        url:
+          type: array
+          items:
+            type: string
+          example: ["https://example.com/instructions1.img", "https://example.com/instructions2.img"]
+          
+
+    TaskCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "6220773656100864"
+          
+    TaskUpdateRequest:
+      required:
+        - status
+        - instructions
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - reopened
+        instructions:
+          type: string
+          example: "I wanted the shed done too"
+        url:
+          type: array
+          items:
+            type: string
+            format: uri
+          example: ["https://example.com/instructions1.img", "https://example.com/instructions2.img"]
+
+    TaskStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of new task
+        sizeMeters:
+          type: integer
+          format: int64
+          description: model size in meters
+        longitude:
+          type: number
+          format: double
+          description: longitude of model
+        latitude:
+          type: number
+          format: double
+          description: latitude of model
+        reopened:
+          type: boolean
+          format: boolean
+          description: is task reopened
+        late:
+          type: boolean
+          format: boolean
+          description: is task late
+        status:
+          type: string
+          description: |
+            task status returned will be either complete or processing.
+          enum:
+            - completed
+            - processing
+        problem:
+          type: string
+          description: |
+            problem of task
+               * `ambiguous marker` - Lat/long is not clearly on a parcel of land (I.e. in the middle of a road)
+               * `cannot model` - Due to the number of penetrations and protrusions it would take too long to render the property so we will not model it
+               * `duplicate request` - If any requests pass our existing report check, and appear to have a lat/long matching an existing request with no additional/different instructions we will flag it as a duplicate request
+               * `no building` - No visible structures on the parcel of land the location pin is on
+               * `obstructed` - Too many objects blocking the structure, and it is not possible to make an educated guess with the resources provided
+               * `outdated model` - 3D model does not match the alternative source provided and appear to be missing structures or parts of structures then the request will be returned with ‘outdated model’
+               * `partial coverage` - 3D model coverage does not cover whole property
+               * `too complex` - Lots of complicated features (i.e. curved, dome like structures) we will flag as too complex given the impact to timing and accuracy
+               * `too large` - A single structure is great than 240x240m or there are multiple structures in a 240x240m space. Use this where you need to zoom the map so far out to include all the structures, that you lose the ability to see sufficient detail in the buildings to render them properly
+               * `wrong property type` - The property type doesn’t match the actual structure shown
+               * `not covered` - Requested location not covered
+               *  `canceled` - Task cancelled by requester
+          enum:
+            - 'ambiguous marker'
+            - 'cannot model'
+            - 'duplicate request'
+            - 'no building'
+            - 'obstructed'
+            - 'outdated model'
+            - 'partial coverage'
+            - 'too complex'
+            - 'too large'
+            - 'wrong property type'
+            - 'not covered'
+            - 'canceled'
+          example: outdated model
+
+    TaskPriority:
+      type: number
+      format: integer
+      enum:
+        - 1
+        - 2
+        - 3
+
+    PropertyType:
+      type: string
+      enum:
+        - singlefamily
+        - multifamily
+        - commercial
+
+    GeometryResponse:
+      type: object
+      properties:
+        dataExport:
+          $ref: "#/components/schemas/DataExport"
+
+    DataExport:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/Location'
+        structures:
+          type: object
+          properties:
+            roofs:
+              type: array
+              items:
+                $ref: '#/components/schemas/Roof'
+        obstructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Obstruction'
+
+    Location:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "23 Henley Rd"
+        city:
+          type: string
+          example: "Wynnewood"
+        latitude:
+          type: number
+          format: double
+          example: 39.980048
+        longitude:
+          type: number
+          format: double
+          example: -75.273939
+        postCode:
+          type: string
+          example: "19096"
+        state:
+          type: string
+          example: "PA"
+
+    Roof:
+      properties:
+        id:
+          type: string
+          example: ROOF1
+        faces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Face'
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Line'
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/Point'
+            
+    Face:
+      properties:
+        id:
+          type: string
+          example: "F1"
+        polygon:
+          $ref: '#/components/schemas/Polygon'
+
+    Polygon:
+      properties:
+        id:
+          type: string
+          example: "P1"
+        path:
+          type: string
+          example: "L1,L2,L3,L4"
+        pitch:
+          type: number
+          format: integer
+          example: 6
+        size:
+          type: number
+          format: integer
+          example: 129
+
+    Line:
+      properties:
+        id:
+          type: string
+          example: "L1"
+        path:
+          type: string
+          example: "C1,C2"
+        type:
+          type: string
+          example: "RAKE"
+
+    Point:
+      properties:
+        id:
+          type: string
+          example: "C1"
+        data:
+          type: string
+          example: "-18.37686085511082,12.477692469246492,249.4241955721368"
+
+    Obstruction:
+      type: object
+      properties:
+        cornerA:
+          type: string
+          description: One defining corner, in feet, as "x,z,y" (the third value is vertical), matching Point data.
+          example: "12.5,3.0,8.2"
+        cornerB:
+          type: string
+          description: The opposite defining corner, same format as cornerA.
+          example: "18.1,3.0,14.7"
+        rotationY:
+          type: number
+          format: double
+          description: Rotation about the vertical centre axis, in radians.
+          example: 0.785
+        label:
+          type: string
+          example: "Obstruction prevents modelling of this area"
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "100111"
+        message:
+          type: string
+          example: "detailed reason why request fails"
+      required:
+        - code
+        - message
+
+  responses:
+    NotFound:
+      description: |
+        The specified resource was not found, can be one of following reasons\
+          No such TaskID
+          No coverage for requested location
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: |
+        Bad request, error code can be one of following \
+          INVALID_PARAMETER If invalid request mandatory fields missing, length limit exceeded, Geocoding the address failed,..., \
+          UNKNOWN unrecognized error from geometry backend, best guess as 400 (ideally should be fixed when notice) \
+          INVALID_OPERATION Get geometry from incomplete task; or Update task not completed; Cancel a completed task; Listen request already placed \
+          INVALID_ADDRESS Geocoding address failed(for create endpoint)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
