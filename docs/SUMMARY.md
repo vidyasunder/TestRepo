@@ -1,7 +1,7 @@
 # Table of contents
 
 * [Getting Started with Nearmap APIs](README.md)
-* [Internal API Reference](internal-api-reference.md)
+* [Internal - Test Page 1](internal-test-page-1.md)
 * ```yaml
   type: builtin:openapi
   props:
@@ -26,3 +26,4 @@
         kind: openapi
         spec: transactionalcontent
   ```
+* [nearmap sales playbook](nearmap-sales-playbook.md)
