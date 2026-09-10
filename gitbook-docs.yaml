@@ -139,6 +139,7 @@ site:
       title: Nearmap Partners
       path: nearmap-partners
       icon: handshake
+      condition: visitor.claims.isPartnerVendor == true
       children:
         - type: space
           key: space-9
