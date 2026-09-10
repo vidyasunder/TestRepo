@@ -1,0 +1,137 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+site:
+  title: Nearmap Help Center
+  structure:
+    - type: section
+      key: section-1
+      title: Home
+      path: home
+      description: Home page for Help Center
+      icon: house
+      default: true
+      children:
+        - type: space
+          key: space-1
+          title: Home
+          path: home
+          default: true
+          content:
+            directory: ./home
+    - type: section
+      key: section-4
+      title: Getting Started
+      path: getting-started
+      icon: rocket-launch
+      children:
+        - type: space
+          key: space-4
+          title: Getting Started
+          path: getting-started
+          default: true
+          content:
+            directory: ./getting-started
+    - type: section
+      key: section-2
+      title: Product Documentation
+      path: product-documentation
+      description: Representative help-center content for MapBrowser, Roof Assessment, Betterview, admin, and support.
+      icon: map-location-dot
+      children:
+        - type: space
+          key: space-2
+          title: Product Documentation
+          path: product-documentation
+          default: true
+          content:
+            directory: ./product-documentation
+    - type: section-group
+      key: section-group-2
+      title: Developer Documentation
+      icon: code-branch
+      children:
+        - type: section
+          key: section-3
+          title: Nearmap API Documentation
+          path: developer-api
+          description: API chooser, authentication, standards, AI Feature API guide, and generated reference pages.
+          icon: code
+          children:
+            - type: space
+              key: space-3
+              title: Nearmap API Documentation
+              path: developer-and-api
+              default: true
+              content:
+                directory: ./docs
+                language: da
+        - type: section
+          key: section-8
+          title: Betterview API Documentation
+          path: betterview
+          description: Betterview API documentation
+          icon: code
+          children:
+            - type: space
+              key: space-8
+              title: Betterview API Documentation
+              path: untitled
+              default: true
+              content:
+                directory: ./betterview/untitled
+    - type: section
+      key: section-6
+      title: Troubleshooting
+      path: troubleshooting
+      description: Here's a compilation of troubleshooting tips to help you with some easy-to-resolve issues you may encounter with Nearmap products.
+      children:
+        - type: space
+          key: space-6
+          title: Troubleshooting
+          path: troubleshooting
+          default: true
+          content:
+            directory: ./troubleshooting
+    - type: section
+      key: section-7
+      title: Frequently Asked Questions (FAQ)
+      path: frequently-asked-questions-faq
+      description: Want a quick answer to your question or issue? You're at the right place.
+      children:
+        - type: space
+          key: space-7
+          title: Frequently Asked Questions (FAQ)
+          path: frequently-asked-questions-faq
+          default: true
+          content:
+            directory: ./frequently-asked-questions-faq
+    - type: section
+      key: section-5
+      title: Resources
+      path: resources
+      children:
+        - type: space
+          key: space-5
+          title: Resources
+          path: resources
+          default: true
+          content:
+            directory: ./resources
+    - type: section-group
+      key: section-group-1
+      title: Nearmap Internal
+      icon: person-shelter
+      children: []
+    - type: section
+      key: section-9
+      title: Nearmap Partners
+      path: nearmap-partners
+      icon: handshake
+      children:
+        - type: space
+          key: space-9
+          title: Nearmap Partners
+          path: api-reference
+          default: true
+          draft: true
+          content:
+            directory: ./nearmap-partners/api-reference
