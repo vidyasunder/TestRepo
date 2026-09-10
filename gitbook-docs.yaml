@@ -123,12 +123,13 @@ site:
       children:
         - type: section
           key: section-10
-          title: Internal Nearmap API Reference
+          title: EagleTech Nearmap API Reference
           path: internal-nearmap-api-reference
+          description: Internal Vendor API documentation for Eagle Tech
           children:
             - type: space
               key: space-10
-              title: Internal Nearmap API Reference
+              title: EagleTech Nearmap API Reference
               path: api-reference
               default: true
               draft: true
