@@ -5,9 +5,10 @@
   props:
     models: true
     downloadLink: true
+    grouping: by-tag
   dependencies:
     spec:
       ref:
         kind: openapi
-        spec: gitbook-petstore
+        spec: poc-aoimanager-internal-vendor-api-v1
   ```
