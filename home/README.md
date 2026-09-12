@@ -31,9 +31,9 @@ metaLinks: {}
 
 ## Nearmap Help Centre
 
-<button type="button" class="button primary" data-action="search" data-query="Enter your search term" data-icon="magnifying-glass">Ask a question</button>
+<button type="button" class="button primary" data-action="search" data-icon="magnifying-glass">Enter your search term</button>
 
-<button type="button" class="button secondary medium" data-action="ask" data-query="How do I get started with MapBrowser?" data-icon="map">Get started with MapBrowser</button> <button type="button" class="button secondary medium" data-action="ask" data-query="https://nearmap-1.gitbook.io/nearmap-documentation-hub/jmydMI5LJ5606UVcSOuz/product-documentation/administration/account-and-user-management" data-icon="receipt">Manage your account</button><button type="button" class="button secondary medium" data-action="ask" data-query="https://nearmap-1.gitbook.io/nearmap-documentation-hub/jmydMI5LJ5606UVcSOuz/developer-api" data-icon="code-branch">Which API should I use?</button>&#x20;
+<a href="https://app.gitbook.com/s/DxYaeDYaFz7NUHSpp5Lm/" class="button secondary medium" data-icon="map">Get started with MapBrowser</a> <button type="button" class="button secondary medium" data-action="ask" data-query="https://nearmap-1.gitbook.io/nearmap-documentation-hub/jmydMI5LJ5606UVcSOuz/product-documentation/administration/account-and-user-management" data-icon="receipt">Manage your account</button><button type="button" class="button secondary medium" data-action="ask" data-query="https://nearmap-1.gitbook.io/nearmap-documentation-hub/jmydMI5LJ5606UVcSOuz/developer-api" data-icon="code-branch">Which API should I use?</button>&#x20;
 
 
 
