@@ -132,7 +132,6 @@ site:
               title: EagleTech Nearmap API Reference
               path: api-reference
               default: true
-              draft: true
               content:
                 directory: ./internal-nearmap-api-reference/api-reference
     - type: section
