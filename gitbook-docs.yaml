@@ -146,6 +146,5 @@ site:
           title: Nearmap Partners
           path: api-reference
           default: true
-          draft: true
           content:
             directory: ./nearmap-partners/api-reference
