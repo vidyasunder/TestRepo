@@ -91,13 +91,6 @@ site:
           default: true
           content:
             directory: ./troubleshooting
-        - type: space
-          key: space-11
-          title: Untitled
-          path: untitled
-          draft: true
-          content:
-            directory: ./troubleshooting/untitled
     - type: section
       key: section-7
       title: Frequently Asked Questions (FAQ)
