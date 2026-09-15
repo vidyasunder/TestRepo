@@ -1,3 +1,3 @@
 # Table of contents
 
-* [Page](README.md)
+* [Our Top Troubleshooting Tips](README.md)
