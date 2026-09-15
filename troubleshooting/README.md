@@ -1,5 +1,6 @@
 ---
 description: Here are some of the most common issues our users encounter.
+icon: square-question
 ---
 
 # Our Top Troubleshooting Tips
